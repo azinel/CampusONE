@@ -10,34 +10,28 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
 import PrimaryButton from "@/components/PrimaryButton";
-import useUpload from "@/utils/useUpload"; 
+import useUpload from "@/utils/useUpload";
 import { collection, addDoc, serverTimestamp, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '@/utils/firebase';
-
 export default function CreateEventScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
-
   const [upload, { loading: uploading }] = useUpload();
   const [checkingAdmin, setCheckingAdmin] = useState(true);
-
-  // Form State
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(""); 
+  const [date, setDate] = useState("");
   const [location, setLocation] = useState("");
   const [description, setDescription] = useState("");
-  const [regLink, setRegLink] = useState(""); // NEW: Link State
+  const [regLink, setRegLink] = useState("");
   const [photoAsset, setPhotoAsset] = useState(null);
   const [submitting, setSubmitting] = useState(false);
-
   useEffect(() => {
     checkAdmin();
   }, []);
-
   const checkAdmin = async () => {
     if (!auth.currentUser?.email) {
-      router.replace("/(tabs)"); 
+      router.replace("/(tabs)");
       return;
     }
     try {
@@ -54,44 +48,37 @@ export default function CreateEventScreen() {
       setCheckingAdmin(false);
     }
   };
-
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
-      allowsEditing: false, 
-      quality: 0.5, 
+      allowsEditing: false,
+      quality: 0.5,
     });
     if (!result.canceled) setPhotoAsset(result.assets[0]);
   };
-
   const handleSubmit = async () => {
     if (!title || !date || !location || !description) {
       Alert.alert("Missing Info", "Please fill all fields marked with *");
       return;
     }
-
     try {
       setSubmitting(true);
       let photoUrl = null;
-
       if (photoAsset) {
         const { url, error } = await upload({ reactNativeAsset: photoAsset });
         if (error) throw new Error("Image upload failed");
         photoUrl = url;
       }
-
-      // Save to Firestore
       await addDoc(collection(db, 'events'), {
         title: title.trim(),
-        date: date.trim(), // Stored as string for display
+        date: date.trim(),
         location: location.trim(),
         description: description.trim(),
-        registration_link: regLink.trim() || null, // NEW: Save the link
+        registration_link: regLink.trim() || null,
         photo_url: photoUrl,
         created_by: auth.currentUser.email,
-        created_at: serverTimestamp(), // This allows us to sort by "Newest"
+        created_at: serverTimestamp(),
       });
-
       Alert.alert("Success", "Event published!", [
         { text: "OK", onPress: () => router.back() }
       ]);
@@ -101,7 +88,6 @@ export default function CreateEventScreen() {
       setSubmitting(false);
     }
   };
-
   if (checkingAdmin) {
     return (
       <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: theme.colors.background }}>
@@ -109,39 +95,31 @@ export default function CreateEventScreen() {
       </View>
     );
   }
-
   const inputStyle = [styles.input, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }];
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <StatusBar style={theme.colors.statusBarStyle} />
       <View style={{ paddingTop: insets.top, flex: 1 }}>
         <ScreenHeader title="Add Event" showBackButton onBackPress={() => router.back()} />
-
         <ScrollView contentContainerStyle={{ padding: 20, paddingBottom: 100 }}>
           <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Title *</Text>
           <TextInput style={inputStyle} placeholder="e.g. Hackathon 2024" placeholderTextColor={theme.colors.textTertiary} value={title} onChangeText={setTitle} />
-
           <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Date & Time (Text) *</Text>
           <TextInput style={inputStyle} placeholder="e.g. Oct 24, 6:00 PM" placeholderTextColor={theme.colors.textTertiary} value={date} onChangeText={setDate} />
-
           <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Location *</Text>
           <TextInput style={inputStyle} placeholder="e.g. Main Auditorium" placeholderTextColor={theme.colors.textTertiary} value={location} onChangeText={setLocation} />
-
-          {/* NEW: Link Input */}
+          {}
           <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Reference Link (Optional)</Text>
-          <TextInput 
-            style={inputStyle} 
-            placeholder="https://forms.google.com/..." 
-            placeholderTextColor={theme.colors.textTertiary} 
-            value={regLink} 
-            onChangeText={setRegLink} 
+          <TextInput
+            style={inputStyle}
+            placeholder="https:
+            placeholderTextColor={theme.colors.textTertiary}
+            value={regLink}
+            onChangeText={setRegLink}
             autoCapitalize="none"
           />
-
           <Text style={[styles.label, { color: theme.colors.textSecondary }]}>Description *</Text>
           <TextInput style={[inputStyle, { minHeight: 100, textAlignVertical: 'top' }]} placeholder="Event details..." placeholderTextColor={theme.colors.textTertiary} value={description} onChangeText={setDescription} multiline />
-
           <TouchableOpacity style={[styles.photoUpload, { borderColor: theme.colors.border }]} onPress={pickImage}>
             {photoAsset ? (
               <Image source={{ uri: photoAsset.uri }} style={styles.photo} resizeMode="cover" />
@@ -152,14 +130,12 @@ export default function CreateEventScreen() {
               </View>
             )}
           </TouchableOpacity>
-
           <PrimaryButton title={submitting || uploading ? "Publishing..." : "Publish Event"} onPress={handleSubmit} disabled={submitting || uploading} />
         </ScrollView>
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   label: { fontSize: 14, fontWeight: '600', marginBottom: 8, marginTop: 16 },
   input: { borderWidth: 1, borderRadius: 12, padding: 14, fontSize: 16 },

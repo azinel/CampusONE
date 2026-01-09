@@ -34,31 +34,25 @@ import { NativeModule, requireNativeModule } from "expo-modules-core";
 import { MotiView } from "moti";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { WebView } from "react-native-webview";
-
 declare class AnythingLauncherModule extends NativeModule {
   open(url: string): Promise<void>;
   reset(): Promise<void>;
   reload(): Promise<void>;
   isWeb(): Promise<boolean>;
 }
-
 const TINT_DURATION_MS = 3000;
 const CIRCLE_DIAMETER = 80;
 const GAP = 16;
 const ICON_SIZE = 18;
-
 const getWebAppUrl = () => {
   return process.env.EXPO_PUBLIC_APP_URL ?? "";
 };
-
 const isAnythingApp =
   Platform.OS !== "web" &&
   process.env.EXPO_PUBLIC_IS_ANYTHING_APP === JSON.stringify(true);
-
 const AnythingLauncher = isAnythingApp
   ? requireNativeModule<AnythingLauncherModule>("AnythingLauncherModule")
   : null;
-
 const RefreshIcon = memo(() => {
   return (
     <Svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 18 18" fill="none">
@@ -72,7 +66,6 @@ const RefreshIcon = memo(() => {
     </Svg>
   );
 });
-
 const CloseIcon = memo(() => {
   return (
     <Svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 18 18" fill="none">
@@ -86,7 +79,6 @@ const CloseIcon = memo(() => {
     </Svg>
   );
 });
-
 const MobileViewIcon = memo(({ color }: { color: string }) => {
   return (
     <Svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 18 18" fill="none">
@@ -110,7 +102,6 @@ const MobileViewIcon = memo(({ color }: { color: string }) => {
     </Svg>
   );
 });
-
 const WebViewIcon = memo(({ color }: { color: string }) => {
   return (
     <Svg width={ICON_SIZE} height={ICON_SIZE} viewBox="0 0 18 18" fill="none">
@@ -145,7 +136,6 @@ const WebViewIcon = memo(({ color }: { color: string }) => {
     </Svg>
   );
 });
-
 const ActiveDot = memo(() => {
   return (
     <View
@@ -160,7 +150,6 @@ const ActiveDot = memo(() => {
     />
   );
 });
-
 const InstructionsOverlay = memo(
   ({
     showTint,
@@ -177,7 +166,6 @@ const InstructionsOverlay = memo(
     const cx1 = left + r;
     const cx2 = cx1 + CIRCLE_DIAMETER + GAP;
     const cy = height / 2 + 64;
-
     return (
       <>
         <MotiView
@@ -202,7 +190,6 @@ const InstructionsOverlay = memo(
               <Circle cx={cx1} cy={cy} r={r} fill="black" />
               <Circle cx={cx2} cy={cy} r={r} fill="black" />
             </Mask>
-
             <Rect
               x="0"
               y="0"
@@ -218,17 +205,13 @@ const InstructionsOverlay = memo(
     );
   }
 );
-
 type State = {
   isLoading: boolean;
   showTint: boolean;
   showWebView: boolean;
 }
-
 type Action = { type: 'INITIALIZE', payload: { showWebView: boolean, showTint: boolean } } | { type: 'TOGGLE_WEB_VIEW' } | { type: 'HIDE_TINT' }
-
 const initialState: State = { isLoading: true, showTint: false, showWebView: false };
-
 function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'INITIALIZE':
@@ -241,18 +224,15 @@ function reducer(state: State, action: Action): State {
       return state;
   }
 }
-
 const AnythingMenu = isAnythingApp
   ? ({ children }: { children: React.ReactNode }) => {
     const insets = useSafeAreaInsets();
     const [state, dispatch] = useReducer(reducer, initialState);
     const { width, height } = useWindowDimensions();
-
     useEffect(() => {
       if (!AnythingLauncher) {
         throw new Error("AnythingLauncher is not available");
       }
-
       if (state.isLoading) {
         Promise.all([
           AnythingLauncher.isWeb(),
@@ -262,40 +242,30 @@ const AnythingMenu = isAnythingApp
         });
       }
     }, [state.isLoading]);
-
     useEffect(() => {
       if (!state.isLoading && state.showTint) {
         const timeout = setTimeout(() => {
           AsyncStorage.setItem("hasSeenOnboarding", "true");
           dispatch({ type: 'HIDE_TINT' });
         }, TINT_DURATION_MS);
-
         return () => clearTimeout(timeout);
       }
-
     }, [state.isLoading, state.showTint])
-
     const menuProgress = useSharedValue(0);
-
     const hideMenuOffset = -(44 + 36 + insets.top + 10);
-
     const exitApp = useCallback(() => {
       AnythingLauncher?.reset();
     }, []);
-
     const reloadApp = useCallback(() => {
       AnythingLauncher?.reload();
     }, []);
-
     const toggleWebView = useCallback(() => {
       dispatch({ type: 'TOGGLE_WEB_VIEW' });
     }, []);
-
     const animatedStyle = useAnimatedStyle(() => {
       const scale = interpolate(menuProgress.value, [0, 1], [1, 0.9]);
       const shadowOpacity = interpolate(menuProgress.value, [0, 1], [0, 0.4]);
       const elevation = interpolate(menuProgress.value, [0, 1], [0, 8]);
-
       return {
         transform: [{ scale }],
         shadowOpacity,
@@ -304,27 +274,22 @@ const AnythingMenu = isAnythingApp
         elevation,
       };
     }, []);
-
     const menuAnimatedStyle = useAnimatedStyle(() => {
       const translateY = interpolate(
         menuProgress.value,
         [0, 1],
         [hideMenuOffset, 0]
       );
-
       return {
         transform: [{ translateY }],
       };
     }, [hideMenuOffset]);
-
     const appPointerEvents = useAnimatedStyle(() => {
       return {
         pointerEvents: menuProgress.value === 1 ? "box-only" : "auto",
       };
     }, [menuProgress]);
-
     const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
     const panResponder = useMemo(
       () =>
         PanResponder.create({
@@ -361,7 +326,6 @@ const AnythingMenu = isAnythingApp
         }),
       []
     );
-
     const menuHeaderStyle = useMemo(
       () => ({
         ...menuStyles.menuHeader,
@@ -369,11 +333,9 @@ const AnythingMenu = isAnythingApp
       }),
       [insets.top]
     );
-
     if (state.isLoading) {
       return null
     }
-
     return (
       <View style={styles.container}>
         <Animated.View
@@ -436,7 +398,6 @@ const AnythingMenu = isAnythingApp
     );
   }
   : ({ children }: { children: React.ReactNode }) => children;
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -508,7 +469,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
 const menuStyles = StyleSheet.create({
   menuContainerStyle: {
     backgroundColor: "#fff",
@@ -574,7 +534,6 @@ const menuStyles = StyleSheet.create({
     fontWeight: "600",
   },
 });
-
 export default function Screen({ children }: { children: React.ReactNode }) {
   return (
     <SafeAreaProvider>

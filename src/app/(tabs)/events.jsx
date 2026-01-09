@@ -11,7 +11,7 @@ import {
   UIManager,
   Linking,
   Alert,
-  Image, // <--- SWITCHED BACK TO STANDARD IMAGE FOR STABILITY
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -21,24 +21,17 @@ import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
 import { collection, query, orderBy, onSnapshot, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '@/utils/firebase';
-
-// Enable animation on Android
 if (Platform.OS === 'android') {
   if (UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
   }
 }
-
-// --- SUB-COMPONENT: Event Card ---
-// --- SUB-COMPONENT: Event Card ---
 const EventCard = ({ item, theme }) => {
   const [expanded, setExpanded] = useState(false);
-
   const toggleExpand = () => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     setExpanded(!expanded);
   };
-
   const handleOpenLink = async () => {
     if (!item.registration_link) return;
     const supported = await Linking.canOpenURL(item.registration_link);
@@ -48,14 +41,13 @@ const EventCard = ({ item, theme }) => {
       Alert.alert("Error", "Invalid Link");
     }
   };
-
   return (
     <TouchableOpacity
       style={[styles.card, { backgroundColor: theme.colors.surface }]}
       activeOpacity={0.9}
       onPress={toggleExpand}
     >
-      {/* Banner Image */}
+      {}
       <View style={styles.imageContainer}>
         {item.photo_url || item.banner_url ? (
           <Image
@@ -69,9 +61,8 @@ const EventCard = ({ item, theme }) => {
           </View>
         )}
       </View>
-
       <View style={styles.content}>
-        {/* Header (Title & Date) */}
+        {}
         <View style={styles.headerRow}>
           <View style={{ flex: 1, paddingRight: 10 }}>
             <Text style={[styles.title, { color: theme.colors.text }]}>{item.title}</Text>
@@ -79,34 +70,30 @@ const EventCard = ({ item, theme }) => {
               {item.date || "Date TBA"}
             </Text>
           </View>
-          <Ionicons 
-            name={expanded ? "chevron-up-circle" : "chevron-down-circle"} 
-            size={28} 
-            color={theme.colors.textTertiary} 
+          <Ionicons
+            name={expanded ? "chevron-up-circle" : "chevron-down-circle"}
+            size={28}
+            color={theme.colors.textTertiary}
           />
         </View>
-
-        {/* EXPANDED CONTENT */}
+        {}
         {expanded && (
           <View style={styles.detailsContainer}>
             <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
-            
-            {/* Location */}
+            {}
             <View style={styles.row}>
               <Ionicons name="location-outline" size={18} color={theme.colors.textSecondary} />
               <Text style={[styles.detailText, { color: theme.colors.text }]}>
                 {item.location || "Venue TBA"}
               </Text>
             </View>
-
-            {/* Description */}
+            {}
             <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
               {item.description}
             </Text>
-            
-            {/* "See Details" Button (Only if a link exists) */}
+            {}
             {item.registration_link ? (
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={[styles.registerBtn, { backgroundColor: theme.colors.primary }]}
                 onPress={handleOpenLink}
               >
@@ -120,37 +107,29 @@ const EventCard = ({ item, theme }) => {
     </TouchableOpacity>
   );
 };
-
-// --- MAIN SCREEN ---
 export default function EventsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
-  
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-
   useEffect(() => {
     const checkAdmin = async () => {
       if (!auth.currentUser?.email) return;
-      // Safety check for Firestore
       try {
         const q = query(collection(db, 'admins'), where('email', '==', auth.currentUser.email));
         const snap = await getDocs(q);
-        setIsAdmin(!snap.empty); 
+        setIsAdmin(!snap.empty);
       } catch (e) {
         console.log("Admin Check Error", e);
       }
     };
     checkAdmin();
   }, []);
-
   useEffect(() => {
     setLoading(true);
-    // Fetch ALL events, ordered by Creation Time (Newest First)
     const q = query(collection(db, 'events'), orderBy('created_at', 'desc'));
-
     const unsub = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -159,19 +138,15 @@ export default function EventsScreen() {
       setEvents(docs);
       setLoading(false);
     });
-
     return () => unsub();
   }, []);
-
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
       <StatusBar style={theme.colors.statusBarStyle} />
-
       <ScreenHeader
         title="Campus Events"
         subtitle="Tap to see details"
       />
-
       {loading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 50 }} />
       ) : (
@@ -187,8 +162,7 @@ export default function EventsScreen() {
           }
         />
       )}
-
-      {/* Admin FAB */}
+      {}
       {isAdmin && (
         <TouchableOpacity
           style={[styles.fab, { bottom: insets.bottom + 20, backgroundColor: '#8A2BE2' }]}
@@ -200,7 +174,6 @@ export default function EventsScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   card: { borderRadius: 16, marginBottom: 20, overflow: "hidden", elevation: 3, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
@@ -211,15 +184,12 @@ const styles = StyleSheet.create({
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
   date: { fontSize: 14, fontWeight: '600' },
-  
   detailsContainer: { marginTop: 12 },
   divider: { height: 1, marginBottom: 12 },
   row: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
   detailText: { fontSize: 14, fontWeight: '500' },
   description: { fontSize: 14, lineHeight: 22, marginTop: 8, marginBottom: 12 },
-  
   registerBtn: { flexDirection: 'row', paddingVertical: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
   registerText: { color: '#FFF', fontWeight: 'bold' },
-  
   fab: { position: "absolute", right: 20, width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center", elevation: 6 },
 });

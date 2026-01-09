@@ -7,12 +7,11 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
-  Image, // SWITCHED: Using standard React Native Image for stability
+  Image, 
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useRouter, useLocalSearchParams } from "expo-router";
-// REMOVED: import { Image } from "expo-image"; (Source of the crash/hang)
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
@@ -20,26 +19,18 @@ import CategoryBadge from "@/components/CategoryBadge";
 import { doc, getDoc, updateDoc, serverTimestamp, collection, query, where, getDocs } from 'firebase/firestore';
 import { db, auth } from '@/utils/firebase';
 import StatusBadge from "@/components/StatusBadge";
-
 export default function ComplaintDetailScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
   const { id } = useLocalSearchParams();
-
   const [complaint, setComplaint] = useState(null);
   const [loading, setLoading] = useState(true);
-  
-  // SECURE ADMIN STATE
   const [isAdmin, setIsAdmin] = useState(false);
-
   useEffect(() => {
-    // 1. Load Data
     loadComplaint();
-    // 2. Check Permissions
     checkAdminStatus(); 
   }, [id]);
-
   const checkAdminStatus = async () => {
     if (!auth.currentUser?.email) return;
     try {
@@ -54,24 +45,19 @@ export default function ComplaintDetailScreen() {
       setIsAdmin(false);
     }
   };
-
   const loadComplaint = async () => {
     if (!id) return;
     try {
       setLoading(true);
       console.log("Fetching complaint:", id);
-
       const docRef = doc(db, 'complaints', id);
       const snap = await getDoc(docRef);
-
       if (snap.exists()) {
         const data = snap.data();
         console.log("Complaint loaded. Has photo?", !!data.photo_url);
-        
         setComplaint({
           id: snap.id,
           ...data,
-          // Safe Timestamp Conversion
           created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : data.created_at,
           updated_at: data.updated_at?.toDate ? data.updated_at.toDate().toISOString() : data.updated_at,
           resolved_at: data.resolved_at?.toDate ? data.resolved_at.toDate().toISOString() : data.resolved_at,
@@ -87,7 +73,6 @@ export default function ComplaintDetailScreen() {
       setLoading(false);
     }
   };
-
   const updateStatus = async (newStatus) => {
     try {
       const docRef = doc(db, 'complaints', id);
@@ -95,11 +80,9 @@ export default function ComplaintDetailScreen() {
         status: newStatus,
         updated_at: serverTimestamp()
       };
-
       if (newStatus === 'Resolved') {
         updateData.resolved_at = serverTimestamp();
       }
-
       await updateDoc(docRef, updateData);
       Alert.alert("Success", `Status updated to ${newStatus}`);
       loadComplaint(); 
@@ -108,7 +91,6 @@ export default function ComplaintDetailScreen() {
       Alert.alert("Error", "Failed to update status.");
     }
   };
-
   const formatDate = (dateString) => {
     if (!dateString) return "Not available";
     const date = new Date(dateString);
@@ -116,7 +98,6 @@ export default function ComplaintDetailScreen() {
       year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
     });
   };
-
   if (loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
@@ -128,7 +109,6 @@ export default function ComplaintDetailScreen() {
       </View>
     );
   }
-
   if (!complaint) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
@@ -139,25 +119,22 @@ export default function ComplaintDetailScreen() {
       </View>
     );
   }
-
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
       <StatusBar style={theme.colors.statusBarStyle} />
-
       <ScreenHeader
         title="Details"
         showBackButton
         onBackPress={() => router.back()}
         actions={[{ icon: "refresh", onPress: loadComplaint }]}
       />
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
-          {/* Main Info */}
+          {}
           <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.badges}>
               <CategoryBadge category={complaint.category} />
@@ -181,8 +158,7 @@ export default function ComplaintDetailScreen() {
               </View>
             </View>
           </View>
-
-          {/* Admin Actions */}
+          {}
           {isAdmin && (
             <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary, borderWidth: 1 }]}>
               <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
@@ -198,14 +174,13 @@ export default function ComplaintDetailScreen() {
               </View>
             </View>
           )}
-
-          {/* Photo Evidence (Using Native Image) */}
+          {}
           {complaint.photo_url && (
             <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
               <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
                 Photo Evidence
               </Text>
-              {/* STABLE IMAGE COMPONENT */}
+              {}
               <Image 
                 source={{ uri: complaint.photo_url }} 
                 style={styles.photo} 
@@ -214,16 +189,14 @@ export default function ComplaintDetailScreen() {
               />
             </View>
           )}
-
-          {/* Description */}
+          {}
           <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
             <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>Description</Text>
             <Text style={[styles.description, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]}>
               {complaint.description}
             </Text>
           </View>
-
-          {/* Reporter Info */}
+          {}
           <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
             <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>Reported By</Text>
             <View style={styles.studentInfo}>
@@ -237,13 +210,11 @@ export default function ComplaintDetailScreen() {
               </View>
             </View>
           </View>
-
         </View>
       </ScrollView>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },
@@ -260,7 +231,6 @@ const styles = StyleSheet.create({
   adminButtons: { flexDirection: 'row', gap: 10, marginTop: 5 },
   adminBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },
   btnText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
-  // Photo style for Native Image
   photo: { width: "100%", height: 200, borderRadius: 12, backgroundColor: '#e1e1e1' }, 
   description: { fontSize: 15, lineHeight: 22 },
   studentInfo: { gap: 10 },

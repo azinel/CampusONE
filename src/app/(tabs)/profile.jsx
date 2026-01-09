@@ -15,13 +15,11 @@ import ScreenHeader from "@/components/ScreenHeader";
 import { collection, onSnapshot, query, orderBy, where, getDocs } from 'firebase/firestore';
 import { db, auth } from "@/utils/firebase";
 import { useAuth } from "@/utils/auth/useAuth";
-
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { signOut } = useAuth();
-  
-  const [isAdmin, setIsAdmin] = useState(false); // Security Role State
+  const [isAdmin, setIsAdmin] = useState(false);
   const [stats, setStats] = useState({
     total: 0,
     pending: 0,
@@ -31,7 +29,6 @@ export default function ProfileScreen() {
     categoryStats: []
   });
   const [loading, setLoading] = useState(true);
-
   const handleLogout = () => {
     Alert.alert(
       "Log Out",
@@ -42,46 +39,35 @@ export default function ProfileScreen() {
       ]
     );
   };
-
   useEffect(() => {
     let active = true;
     let unsubStats = () => {};
-
     const verifyAndLoad = async () => {
       if (!auth.currentUser?.email) {
         setLoading(false);
         return;
       }
-
       try {
-        // 1. SECURITY CHECK: Verify against 'admins' collection
         const adminQuery = query(
-          collection(db, 'admins'), 
+          collection(db, 'admins'),
           where('email', '==', auth.currentUser.email)
         );
         const adminSnap = await getDocs(adminQuery);
         const isUserAdmin = !adminSnap.empty;
-
         if (!active) return;
         setIsAdmin(isUserAdmin);
-
-        // 2. DATA LOAD: Only fetch campus-wide stats if user is Admin
         if (isUserAdmin) {
           const q = query(collection(db, 'complaints'), orderBy('created_at', 'desc'));
           unsubStats = onSnapshot(q, (snapshot) => {
             if (!active) return;
             const complaints = snapshot.docs.map(doc => doc.data());
-            
             let p = 0, ip = 0, r = 0, hp = 0;
             const categories = {};
-
             complaints.forEach(item => {
               if (item.status === 'Pending') p++;
               else if (item.status === 'In Progress') ip++;
               else if (item.status === 'Resolved') r++;
-              
               if (item.priority > 2) hp++;
-              
               const cat = item.category || 'Other';
               if (!categories[cat]) {
                 categories[cat] = { category: cat, count: 0, resolved_count: 0 };
@@ -89,7 +75,6 @@ export default function ProfileScreen() {
               categories[cat].count++;
               if (item.status === 'Resolved') categories[cat].resolved_count++;
             });
-
             setStats({
               total: complaints.length,
               pending: p,
@@ -108,15 +93,12 @@ export default function ProfileScreen() {
         setLoading(false);
       }
     };
-
     verifyAndLoad();
     return () => { active = false; unsubStats(); };
   }, []);
-
   const getResolvedPercentage = () => {
     return stats.total > 0 ? Math.round((stats.resolved / stats.total) * 100) : 0;
   };
-
   if (loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
@@ -127,23 +109,20 @@ export default function ProfileScreen() {
       </View>
     );
   }
-
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
       <StatusBar style={theme.colors.statusBarStyle} />
-      
-      <ScreenHeader 
-        title="Profile" 
-        subtitle={isAdmin ? "Staff Dashboard" : "Student Portal"} 
+      <ScreenHeader
+        title="Profile"
+        subtitle={isAdmin ? "Staff Dashboard" : "Student Portal"}
         actions={[{ icon: "log-out-outline", onPress: handleLogout, style: { color: theme.colors.error } }]}
       />
-
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={[styles.content, { paddingBottom: insets.bottom + 20 }]}
         showsVerticalScrollIndicator={false}
       >
-        {/* User Identity Card */}
+        {}
         <View style={[styles.card, { backgroundColor: theme.colors.surface, alignItems: 'center', paddingVertical: 30 }]}>
           <View style={[styles.avatar, { backgroundColor: theme.colors.primary + '20' }]}>
             <Ionicons name="person" size={40} color={theme.colors.primary} />
@@ -160,12 +139,9 @@ export default function ProfileScreen() {
             </Text>
           </View>
         </View>
-
         {isAdmin ? (
-          /* --- ADMIN ONLY SECTION --- */
           <View>
             <Text style={styles.sectionHeader}>Campus Analytics</Text>
-            
             <View style={[styles.statsCard, { backgroundColor: theme.colors.surface }]}>
               <View style={styles.statsGrid}>
                 <StatItem icon="alert-circle" color={theme.colors.primary} value={stats.total} label="Total" theme={theme} />
@@ -173,7 +149,6 @@ export default function ProfileScreen() {
                 <StatItem icon="hammer" color={theme.colors.info} value={stats.inProgress} label="Active" theme={theme} />
                 <StatItem icon="checkmark-circle" color={theme.colors.success} value={stats.resolved} label="Solved" theme={theme} />
               </View>
-              
               <View style={styles.progressSection}>
                 <View style={styles.progressHeader}>
                   <Text style={[styles.progressLabel, { color: theme.colors.textSecondary }]}>Resolution Rate</Text>
@@ -184,7 +159,6 @@ export default function ProfileScreen() {
                 </View>
               </View>
             </View>
-
             {stats.highPriority > 0 && (
               <View style={[styles.alertCard, { backgroundColor: theme.colors.error + "15", borderColor: theme.colors.error }]}>
                 <Ionicons name="warning" size={24} color={theme.colors.error} />
@@ -194,7 +168,6 @@ export default function ProfileScreen() {
                 </View>
               </View>
             )}
-
             <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
               <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Category Breakdown</Text>
               {stats.categoryStats.map((item, index) => (
@@ -211,25 +184,12 @@ export default function ProfileScreen() {
             </View>
           </View>
         ) : (
-          /* --- STUDENT ONLY SECTION --- */
           <View>
-            {/* <View style={[styles.card, { backgroundColor: theme.colors.surface }]}> */}
-              {/* <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Quick Actions</Text>
-              <Text style={{ color: theme.colors.textSecondary, marginBottom: 15 }}>
-                Manage your campus experience.
-              </Text>
-              <View style={styles.infoRow}>
-                <Ionicons name="document-text" size={20} color={theme.colors.primary} />
-                <Text style={{ color: theme.colors.text, marginLeft: 10 }}>View My Complaints</Text>
-              </View>
-              <View style={[styles.infoRow, { marginTop: 15 }]}>
-                <Ionicons name="restaurant" size={20} color={theme.colors.primary} />
-                <Text style={{ color: theme.colors.text, marginLeft: 10 }}>Give Mess Feedback</Text>
-              </View> */}
-            {/* </View> */}
+            {}
+              {}
+            {}
           </View>
         )}
-
         <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
           <Text style={[styles.cardTitle, { color: theme.colors.text }]}>About CampusOne</Text>
           <Text style={{ color: theme.colors.textSecondary, fontSize: 14, lineHeight: 20 }}>
@@ -237,13 +197,11 @@ export default function ProfileScreen() {
             Connected to Cloud: {auth.currentUser ? "Verified" : "Disconnected"}
           </Text>
         </View>
-
         <Text style={[styles.footer, { color: theme.colors.textTertiary }]}>CampusOne • Smart Campus Backbone</Text>
       </ScrollView>
     </View>
   );
 }
-
 const StatItem = ({ icon, color, value, label, theme }) => (
   <View style={styles.statItem}>
     <Ionicons name={icon} size={24} color={color} />
@@ -251,7 +209,6 @@ const StatItem = ({ icon, color, value, label, theme }) => (
     <Text style={[styles.statLabel, { color: theme.colors.textSecondary }]}>{label}</Text>
   </View>
 );
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },

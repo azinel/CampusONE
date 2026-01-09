@@ -5,9 +5,7 @@ import { SplashScreen } from 'expo-router/build/exports';
 import { DevSettings, LogBox, Platform, View } from 'react-native';
 import { serializeError } from 'serialize-error';
 import { reportErrorToRemote } from './report-error-to-remote';
-
 type ErrorBoundaryState = { hasError: boolean; error: unknown | null; sentLogs: boolean };
-
 const DeviceErrorBoundary = ({
   sentLogs,
 }: {
@@ -21,9 +19,7 @@ const DeviceErrorBoundary = ({
       window.location.reload();
       return;
     }
-
     Updates.reloadAsync().catch((error) => {
-      // no-op, we don't want to show an error here
     });
   }, []);
   return (
@@ -43,7 +39,6 @@ const DeviceErrorBoundary = ({
     </SharedErrorBoundary>
   );
 };
-
 export class DeviceErrorBoundaryWrapper extends React.Component<
   {
     children: ReactNode;
@@ -51,7 +46,6 @@ export class DeviceErrorBoundaryWrapper extends React.Component<
   ErrorBoundaryState
 > {
   state: ErrorBoundaryState = { hasError: false, error: null, sentLogs: false };
-
   static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
     return { hasError: true, error, sentLogs: false };
   }
@@ -65,7 +59,6 @@ export class DeviceErrorBoundaryWrapper extends React.Component<
         this.setState({ hasError: true, sentLogs: false });
       });
   }
-
   render() {
     if (this.state.hasError) {
       return <DeviceErrorBoundary sentLogs={this.state.sentLogs} />;

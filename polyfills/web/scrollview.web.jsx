@@ -1,6 +1,5 @@
 import React, { useMemo } from 'react';
 import RNScrollView from 'react-native-web/dist/exports/ScrollView';
-
 export const ScrollView = React.forwardRef((props, ref) => {
     const extendedStyle = useMemo(() => {
         if (props.horizontal) {
@@ -8,7 +7,6 @@ export const ScrollView = React.forwardRef((props, ref) => {
         }
         return props.style
     }, [props.horizontal, props.style])
-
   return (
     <RNScrollView
       ref={ref}
@@ -17,7 +15,5 @@ export const ScrollView = React.forwardRef((props, ref) => {
     />
   );
 });
-
 ScrollView.displayName = 'ScrollView';
-
 export default ScrollView;

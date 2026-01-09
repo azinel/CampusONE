@@ -1,6 +1,5 @@
 import React from 'react';
 import RNTextInput from 'react-native/Libraries/Components/TextInput/TextInput';
-
 const TextInput = React.forwardRef((props, ref) => {
   return (
     <RNTextInput
@@ -10,7 +9,5 @@ const TextInput = React.forwardRef((props, ref) => {
     />
   );
 });
-
 TextInput.displayName = 'TextInput';
-
 export default TextInput;

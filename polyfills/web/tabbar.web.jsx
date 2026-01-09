@@ -3,11 +3,9 @@ import { merge } from 'lodash';
 import { forwardRef } from 'react';
 import { Platform } from 'react-native';
 export const BASE_TAB_BAR_HEIGHT = Platform.OS === 'ios' ? 49 : 56;
-
 export const Tabs = forwardRef((props, ref) => {
   const isInIframe = typeof window !== 'undefined' ? window.self !== window.top : false;
   const height = props.screenOptions.tabBarStyle?.height || (BASE_TAB_BAR_HEIGHT + (isInIframe ? 34 : 0));
-
   return (
     <ExpoTabs
       {...props}
@@ -18,7 +16,5 @@ export const Tabs = forwardRef((props, ref) => {
     />
   );
 });
-
 Tabs.Screen = ExpoTabs.Screen;
-
 export default Tabs;

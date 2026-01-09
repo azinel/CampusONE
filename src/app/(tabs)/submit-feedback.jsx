@@ -18,14 +18,12 @@ import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
 import PrimaryButton from "@/components/PrimaryButton";
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
-import { db, auth } from '@/utils/firebase'; // Added auth
+import { db, auth } from '@/utils/firebase';
 import KeyboardAvoidingAnimatedView from "@/components/KeyboardAvoidingAnimatedView";
-
 export default function SubmitFeedbackScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
-
   const [mealType, setMealType] = useState("");
   const [mealName, setMealName] = useState("");
   const [tasteRating, setTasteRating] = useState(0);
@@ -34,20 +32,14 @@ export default function SubmitFeedbackScreen() {
   const [feedbackText, setFeedbackText] = useState("");
   const [isAnonymous, setIsAnonymous] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-
   const mealTypes = ["Breakfast", "Lunch", "Dinner", "Snacks"];
-
   const handleSubmit = async () => {
-    // Validation
     if (!mealType || !mealName.trim() || tasteRating === 0 || hygieneRating === 0 || quantityRating === 0) {
       Alert.alert("Missing Information", "Please complete the rating and meal details.");
       return;
     }
-
     try {
       setSubmitting(true);
-
-      // 1. Try backend POST
       try {
         const response = await fetch("/api/mess-feedback", {
           method: "POST",
@@ -56,7 +48,7 @@ export default function SubmitFeedbackScreen() {
             meal_type: mealType, meal_name: mealName,
             taste_rating: tasteRating, hygiene_rating: hygieneRating, quantity_rating: quantityRating,
             feedback_text: feedbackText.trim() || null, is_anonymous: isAnonymous,
-            student_email: auth.currentUser?.email // Tracking user for mess optimization
+            student_email: auth.currentUser?.email
           }),
         });
         if (response.ok) {
@@ -66,8 +58,6 @@ export default function SubmitFeedbackScreen() {
       } catch (e) {
         console.warn('Backend fallback');
       }
-
-      // 2. Fallback: Firestore
       await addDoc(collection(db, 'mess_feedback'), {
         meal_type: mealType, meal_name: mealName,
         taste_rating: tasteRating, hygiene_rating: hygieneRating, quantity_rating: quantityRating,
@@ -75,7 +65,6 @@ export default function SubmitFeedbackScreen() {
         student_email: auth.currentUser?.email,
         created_at: serverTimestamp(),
       });
-
       Alert.alert("Success!", "Feedback saved (Firestore).", [{ text: "OK", onPress: () => router.replace("/(tabs)/mess") }]);
     } catch (error) {
       Alert.alert("Error", "Failed to submit feedback.");
@@ -83,7 +72,6 @@ export default function SubmitFeedbackScreen() {
       setSubmitting(false);
     }
   };
-
   const renderStarSelector = (currentRating, setRating, label) => (
     <View style={styles.ratingSection}>
       <View style={styles.ratingHeader}>
@@ -99,19 +87,15 @@ export default function SubmitFeedbackScreen() {
       </View>
     </View>
   );
-
   const paddingAnimation = useRef(new Animated.Value(insets.bottom + 12)).current;
   const animateTo = (value) => Animated.timing(paddingAnimation, { toValue: value, duration: 200, useNativeDriver: false }).start();
-
   return (
     <KeyboardAvoidingAnimatedView style={{ flex: 1 }} behavior="padding">
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
         <StatusBar style={theme.colors.statusBarStyle} />
         <ScreenHeader title="Submit Feedback" showBackButton onBackPress={() => router.back()} />
-
         <ScrollView style={styles.scrollView} contentContainerStyle={{ paddingBottom: insets.bottom + 100 }} showsVerticalScrollIndicator={false}>
           <Animated.View style={[styles.form, { paddingBottom: paddingAnimation }]}>
-            
             <Text style={[styles.label, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>Meal Type *</Text>
             <View style={styles.mealTypeGrid}>
               {mealTypes.map((type) => (
@@ -120,9 +104,7 @@ export default function SubmitFeedbackScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-
             <TextInput style={[styles.input, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]} placeholder="Meal Name (e.g., Poha, Biryani)" value={mealName} onChangeText={setMealName} onFocus={() => animateTo(12)} onBlur={() => animateTo(insets.bottom + 12)} />
-
             <View style={[styles.ratingsCard, { backgroundColor: theme.colors.surface }]}>
               {renderStarSelector(tasteRating, setTasteRating, "Taste")}
               <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
@@ -130,14 +112,11 @@ export default function SubmitFeedbackScreen() {
               <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
               {renderStarSelector(quantityRating, setQuantityRating, "Quantity")}
             </View>
-
             <TextInput style={[styles.textArea, { backgroundColor: theme.colors.surface, color: theme.colors.text, borderColor: theme.colors.border }]} placeholder="Additional comments..." value={feedbackText} onChangeText={setFeedbackText} multiline onFocus={() => animateTo(12)} onBlur={() => animateTo(insets.bottom + 12)} />
-
             <TouchableOpacity style={styles.anonymousToggle} onPress={() => setIsAnonymous(!isAnonymous)}>
                <View style={styles.toggleLeft}><Ionicons name={isAnonymous ? "eye-off" : "eye"} size={20} color={theme.colors.textSecondary} /><Text style={{ color: theme.colors.text }}>Submit as Anonymous</Text></View>
                <View style={[styles.switch, { backgroundColor: isAnonymous ? theme.colors.primary : theme.colors.border }]}><View style={[styles.switchKnob, { backgroundColor: "#FFFFFF" }, isAnonymous && styles.switchKnobActive]} /></View>
             </TouchableOpacity>
-
             <View style={{ height: 20 }} />
             <PrimaryButton title={submitting ? "Submitting..." : "Submit Feedback"} onPress={handleSubmit} disabled={submitting} gradient />
           </Animated.View>
@@ -146,7 +125,6 @@ export default function SubmitFeedbackScreen() {
     </KeyboardAvoidingAnimatedView>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   scrollView: { flex: 1 },

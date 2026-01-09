@@ -3,13 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useAuthStore } from './store';
-
 const callbackUrl = '/api/auth/token';
 const callbackQueryString = `callbackUrl=${callbackUrl}`;
-
-/**
- * This renders a WebView for authentication and handles both web and native platforms.
- */
 export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
   const [currentURI, setURI] = useState(`${baseURL}/account/${mode}?${callbackQueryString}`);
   const { auth, setAuth, isReady } = useAuthStore();
@@ -29,13 +24,11 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
     }
     setURI(`${baseURL}/account/${mode}?${callbackQueryString}`);
   }, [mode, baseURL, isAuthenticated]);
-
   useEffect(() => {
     if (typeof window === 'undefined' || !window.addEventListener) {
       return;
     }
     const handleMessage = (event) => {
-      // Verify the origin for security
       if (event.origin !== process.env.EXPO_PUBLIC_PROXY_BASE_URL) {
         return;
       }
@@ -48,19 +41,15 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
         console.error('Auth error:', event.data.error);
       }
     };
-
     window.addEventListener('message', handleMessage);
-
     return () => {
       window.removeEventListener('message', handleMessage);
     };
   }, [setAuth]);
-
   if (Platform.OS === 'web') {
     const handleIframeError = () => {
       console.error('Failed to load auth iframe');
     };
-
     return (
       <iframe
         ref={iframeRef}
@@ -93,8 +82,6 @@ export const AuthWebView = ({ mode, proxyURL, baseURL }) => {
           return false;
         }
         if (request.url === currentURI) return true;
-
-        // Add query string properly by checking if URL already has parameters
         const hasParams = request.url.includes('?');
         const separator = hasParams ? '&' : '?';
         const newURL = request.url.replaceAll(proxyURL, baseURL);

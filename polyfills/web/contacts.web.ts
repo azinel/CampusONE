@@ -3,9 +3,7 @@ import { Fields, SortTypes } from 'expo-contacts/src/Contacts';
 import Alert from './alerts.web';
 import * as Notifications from 'expo-contacts';
 const { PermissionStatus } = Notifications;
-
 export { PermissionStatus, Fields, SortTypes };
-
 const fakeContacts: ExistingContact[] = [
   {
     id: '1',
@@ -104,24 +102,19 @@ const fakeContacts: ExistingContact[] = [
     note: 'Gym buddy',
   },
 ];
-
 let permissionStatus = {
   status: PermissionStatus.UNDETERMINED,
   expires: 'never',
   granted: false,
   canAskAgain: true,
 };
-
-// since we polyfill fake contacts, we always return true
 export const isAvailableAsync = async () => {
   return true;
 };
-
 export const requestPermissionsAsync = async () => {
   if (permissionStatus.status === PermissionStatus.GRANTED) {
     return permissionStatus;
   }
-
   return new Promise((resolve) => {
     Alert.alert(
       '"Expo Go" Would Like to Access Your Contacts',
@@ -157,27 +150,21 @@ export const requestPermissionsAsync = async () => {
     );
   });
 };
-
 export const getPermissionsAsync = async () => {
   return permissionStatus;
 };
-
 export const getContactsAsync = async (options: ContactQuery = {}) => {
   const { sort = SortTypes.FirstName, pageSize, pageOffset } = options;
-
   let contacts = [...fakeContacts];
-
   if (sort === SortTypes.FirstName) {
     contacts.sort((a, b) => (a.firstName || '').localeCompare(b.firstName || ''));
   } else if (sort === SortTypes.LastName) {
     contacts.sort((a, b) => (a.lastName || '').localeCompare(b.lastName || ''));
   }
-
   if (pageSize && pageOffset !== undefined) {
     const startIndex = pageOffset * pageSize;
     contacts = contacts.slice(startIndex, startIndex + pageSize);
   }
-
   return {
     data: contacts,
     hasNextPage: false,
@@ -185,16 +172,13 @@ export const getContactsAsync = async (options: ContactQuery = {}) => {
     total: fakeContacts.length,
   };
 };
-
 export const getContactByIdAsync = async (id: string, options: ContactQuery = {}) => {
   const contact = fakeContacts.find((c) => c.id === id);
   if (!contact) {
     throw new Error(`Contact with id ${id} not found`);
   }
-
   return contact;
 };
-
 export const addContactAsync = async (contact: ExistingContact) => {
   const newContact: ExistingContact = {
     id: Date.now().toString(),
@@ -229,40 +213,33 @@ export const addContactAsync = async (contact: ExistingContact) => {
     socialProfiles: contact.socialProfiles,
     isFavorite: contact.isFavorite,
   };
-
   fakeContacts.push(newContact);
   Alert.alert('Success', 'Contact added successfully!');
   return newContact.id;
 };
-
 export const updateContactAsync = async (contact: ExistingContact) => {
   const index = fakeContacts.findIndex((c) => c.id === contact.id);
   if (index === -1) {
     throw new Error(`Contact with id ${contact.id} not found`);
   }
-
   fakeContacts[index] = { ...fakeContacts[index], ...contact };
   return contact.id;
 };
-
 export const removeContactAsync = async (contactId: string) => {
   const index = fakeContacts.findIndex((c) => c.id === contactId);
   if (index === -1) {
     throw new Error(`Contact with id ${contactId} not found`);
   }
-
   fakeContacts.splice(index, 1);
   setTimeout(() => {
     Alert.alert('Success', 'Contact deleted successfully!');
   }, 500);
   return contactId;
 };
-
 const _createNoOpAsync = async () => {
   Alert.alert('Not supported in the builder', 'Please use the Expo Go app to test this feature');
   return { type: 'custom', data: null };
 };
-
 export const presentContactPickerAsync = async () => {
   return _createNoOpAsync();
 };
@@ -278,7 +255,6 @@ export const removeGroupAsync = async () => {
 export const updateGroupNameAsync = async () => {
   return _createNoOpAsync();
 };
-
 export default {
   Fields,
   SortTypes,

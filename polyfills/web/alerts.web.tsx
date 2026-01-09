@@ -8,19 +8,15 @@ import {
 	TouchableOpacity,
 	TextInput,
 } from 'react-native';
-
 type AlertButton = {
 	text: string;
 	onPress?: (value?: string | { login: string; password: string }) => void;
 	style: 'cancel' | 'destructive' | 'default';
 };
-
 type AlertOptions = {
 	userInterfaceStyle: string;
 };
-
 type AlertType = 'default' | 'plain-text' | 'secure-text' | 'login-password';
-
 let globalAlertData = {
 	visible: false,
 	title: '',
@@ -29,7 +25,6 @@ let globalAlertData = {
 	userInterfaceStyle: 'light',
 };
 let setGlobalAlert: ((data: typeof globalAlertData) => void) | null = null;
-
 let globalPromptData = {
 	visible: false,
 	title: '',
@@ -41,7 +36,6 @@ let globalPromptData = {
 	userInterfaceStyle: 'light',
 };
 let setGlobalPrompt: ((data: typeof globalPromptData) => void) | null = null;
-
 const processButtons = (
 	buttons?: AlertButton[],
 	includeCancel = false
@@ -55,8 +49,6 @@ const processButtons = (
 						{ text: 'OK', onPress: () => {}, style: 'default' as const },
 					]
 				: [{ text: 'OK', onPress: () => {}, style: 'default' as const }];
-
-	// cancel button should always be the last button unless there are two buttons
 	if (processedButtons.length === 2) {
 		const cancelIndex = processedButtons.findIndex(
 			(btn) => btn.style === 'cancel'
@@ -76,10 +68,8 @@ const processButtons = (
 			processedButtons = [...otherButtons, cancelButton];
 		}
 	}
-
 	return processedButtons;
 };
-
 const Alert = {
 	alert(
 		title: string,
@@ -88,7 +78,6 @@ const Alert = {
 		userInterfaceStyle?: AlertOptions
 	) {
 		const processedButtons = processButtons(buttons);
-
 		globalAlertData = {
 			visible: true,
 			title: title,
@@ -103,7 +92,6 @@ const Alert = {
 			setGlobalAlert({ ...globalAlertData });
 		}
 	},
-
 	prompt(
 		title: string,
 		message?: string,
@@ -114,7 +102,6 @@ const Alert = {
 		userInterfaceStyle?: AlertOptions
 	) {
 		const processedButtons = processButtons(callbackOrButtons, true);
-
 		globalPromptData = {
 			visible: true,
 			title: title,
@@ -133,7 +120,6 @@ const Alert = {
 		}
 	},
 };
-
 export const AlertModal = () => {
 	const [alertData, setAlertData] = useState(globalAlertData);
 	const [promptData, setPromptData] = useState(globalPromptData);
@@ -157,7 +143,6 @@ export const AlertModal = () => {
 	const [loginValue, setLoginValue] = useState('');
 	const scaleAnim = useRef(new Animated.Value(1.25)).current;
 	const opacityAnim = useRef(new Animated.Value(0)).current;
-
 	useEffect(() => {
 		const showModal = () => {
 			setModalVisible(true);
@@ -174,7 +159,6 @@ export const AlertModal = () => {
 				}),
 			]).start();
 		};
-
 		if (promptData.visible) {
 			setCurrentModalData({
 				...promptData,
@@ -200,7 +184,6 @@ export const AlertModal = () => {
 		opacityAnim,
 		scaleAnim,
 	]);
-
 	const modalData = currentModalData || {
 		...alertData,
 		isPrompt: false,
@@ -209,7 +192,6 @@ export const AlertModal = () => {
 		defaultValue: '',
 		keyboardType: 'default',
 	};
-
 	useEffect(() => {
 		setGlobalAlert = setAlertData;
 		setGlobalPrompt = setPromptData;
@@ -218,7 +200,6 @@ export const AlertModal = () => {
 			setGlobalPrompt = null;
 		};
 	}, []);
-
 	const closeModal = () => {
 		Animated.timing(opacityAnim, {
 			toValue: 0,
@@ -251,9 +232,7 @@ export const AlertModal = () => {
 			setCurrentModalData(null);
 		});
 	};
-
 	const styles = styling(modalData.userInterfaceStyle);
-
 	return (
 		<Modal visible={modalVisible} transparent animationType="none">
 			<Animated.View style={[styles.container, { opacity: opacityAnim }]}>
@@ -428,9 +407,7 @@ export const AlertModal = () => {
 		</Modal>
 	);
 };
-
 const styling = (userInterfaceStyle: string) =>
-	// @ts-expect-error - outlineStyle is for web only
 	StyleSheet.create({
 		container: {
 			flex: 1,
@@ -518,5 +495,4 @@ const styling = (userInterfaceStyle: string) =>
 					: 'lightgray',
 		},
 	});
-
 export default Alert;

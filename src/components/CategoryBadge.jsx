@@ -2,13 +2,11 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "../utils/theme";
-
 export default function CategoryBadge({
   category,
   fontFamily = "Lato_400Regular",
 }) {
   const theme = useTheme();
-
   const getCategoryConfig = () => {
     switch (category) {
       case "Water":
@@ -49,9 +47,7 @@ export default function CategoryBadge({
         };
     }
   };
-
   const config = getCategoryConfig();
-
   return (
     <View style={[styles.badge, { backgroundColor: config.backgroundColor }]}>
       <Ionicons name={config.icon} size={14} color={config.textColor} />
@@ -66,7 +62,6 @@ export default function CategoryBadge({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   badge: {
     flexDirection: "row",

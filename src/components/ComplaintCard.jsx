@@ -4,21 +4,16 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/utils/theme";
 import CategoryBadge from "./CategoryBadge";
 import StatusBadge from "./StatusBadge";
-
 export default function ComplaintCard({ data, onPress }) {
   const theme = useTheme();
-
-  // Safe date formatting
   const formatDate = (timestamp) => {
     if (!timestamp) return "Just now";
-    // Handle Firestore Timestamp or ISO string
     const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
     return date.toLocaleDateString("en-US", {
       month: "short",
       day: "numeric",
     });
   };
-
   return (
     <TouchableOpacity
       style={[
@@ -31,13 +26,12 @@ export default function ComplaintCard({ data, onPress }) {
       onPress={onPress}
       activeOpacity={0.7}
     >
-      {/* Header: Category & Status */}
+      {}
       <View style={styles.header}>
         <CategoryBadge category={data.category} />
         <StatusBadge status={data.status} />
       </View>
-
-      {/* Main Content */}
+      {}
       <View style={styles.content}>
         <Text
           style={[styles.title, { color: theme.colors.text }]}
@@ -45,7 +39,6 @@ export default function ComplaintCard({ data, onPress }) {
         >
           {data.title}
         </Text>
-        
         <View style={styles.metaRow}>
           <View style={styles.metaItem}>
             <Ionicons
@@ -59,7 +52,6 @@ export default function ComplaintCard({ data, onPress }) {
               {data.hostel} • {data.room_number}
             </Text>
           </View>
-
           <View style={styles.metaItem}>
             <Ionicons
               name="time-outline"
@@ -74,8 +66,7 @@ export default function ComplaintCard({ data, onPress }) {
           </View>
         </View>
       </View>
-
-      {/* Footer / Action Indicator */}
+      {}
       <View
         style={[styles.footer, { borderTopColor: theme.colors.border }]}
       >
@@ -91,17 +82,14 @@ export default function ComplaintCard({ data, onPress }) {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     marginBottom: 16,
     padding: 16,
-    // Shadow for iOS
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    // Elevation for Android
     elevation: 3,
   },
   header: {

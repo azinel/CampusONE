@@ -18,28 +18,22 @@ import ScreenHeader from "@/components/ScreenHeader";
 import PrimaryButton from "@/components/PrimaryButton";
 import { doc, getDoc, updateDoc, increment } from 'firebase/firestore';
 import { db, auth } from '@/utils/firebase';
-
 export default function EventDetailScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
   const { id } = useLocalSearchParams();
-
   const [event, setEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-
   useEffect(() => {
     loadEvent();
   }, [id]);
-
   const loadEvent = async () => {
     if (!id) return;
     try {
       setLoading(true);
-
-      // Attempt backend fetch first (keeping your original architecture)
       try {
         const response = await fetch(`/api/events/${id}`);
         if (response.ok) {
@@ -51,17 +45,13 @@ export default function EventDetailScreen() {
       } catch (e) {
         console.warn("Backend fetch failed for event detail, falling back to Firestore");
       }
-
-      // Fallback: Direct Firestore fetch
       const docRef = doc(db, 'events', id);
       const snap = await getDoc(docRef);
-      
       if (snap.exists()) {
         const data = snap.data();
         setEvent({
           id: snap.id,
           ...data,
-          // Convert Firebase Timestamps to ISO strings for Date compatibility
           event_date: data.event_date?.toDate ? data.event_date.toDate().toISOString() : data.event_date,
         });
       }
@@ -71,28 +61,22 @@ export default function EventDetailScreen() {
       setLoading(false);
     }
   };
-
   const handleRegister = async () => {
     if (!auth.currentUser) {
       Alert.alert("Login Required", "Please log in to register for events.");
       return;
     }
-
     try {
       setRegistering(true);
       const docRef = doc(db, 'events', id);
-      
-      // Professional Logic: Update attendee count in Firestore
       await updateDoc(docRef, {
         attendee_count: increment(isRegistered ? -1 : 1)
       });
-
       setIsRegistered(!isRegistered);
       setEvent(prev => ({ 
         ...prev, 
         attendee_count: (prev.attendee_count || 0) + (isRegistered ? -1 : 1) 
       }));
-
       Alert.alert(
         "Success", 
         isRegistered ? "You have unregistered from this event." : "You are successfully registered!"
@@ -104,7 +88,6 @@ export default function EventDetailScreen() {
       setRegistering(false);
     }
   };
-
   const formatFullDate = (dateString) => {
     if (!dateString) return "";
     const date = new Date(dateString);
@@ -117,7 +100,6 @@ export default function EventDetailScreen() {
       minute: "2-digit",
     });
   };
-
   if (loading) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
@@ -125,7 +107,6 @@ export default function EventDetailScreen() {
       </View>
     );
   }
-
   if (!event) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
@@ -136,12 +117,10 @@ export default function EventDetailScreen() {
       </View>
     );
   }
-
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
       <StatusBar style={theme.colors.statusBarStyle} />
       <ScreenHeader title="Event Details" showBackButton onBackPress={() => router.back()} />
-
       <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         {event.banner_url ? (
           <Image source={{ uri: event.banner_url }} style={styles.banner} contentFit="cover" />
@@ -150,16 +129,13 @@ export default function EventDetailScreen() {
             <Ionicons name="calendar" size={80} color={theme.colors.primary} />
           </View>
         )}
-
         <View style={styles.content}>
           <View style={[styles.clubBadge, { backgroundColor: theme.colors.primary + "15" }]}>
             <Text style={[styles.clubName, { color: theme.colors.primary, fontFamily: "Lato_700Bold" }]}>
               {event.club_name || "Campus Community"}
             </Text>
           </View>
-
           <Text style={[styles.title, { color: theme.colors.text, fontFamily: "Lato_700Bold" }]}>{event.title}</Text>
-
           <View style={styles.infoCard}>
             <View style={[styles.iconBox, { backgroundColor: theme.colors.primary + "10" }]}>
               <Ionicons name="time-outline" size={24} color={theme.colors.primary} />
@@ -169,7 +145,6 @@ export default function EventDetailScreen() {
               <Text style={[styles.infoValue, { color: theme.colors.text }]}>{formatFullDate(event.event_date)}</Text>
             </View>
           </View>
-
           <View style={styles.infoCard}>
             <View style={[styles.iconBox, { backgroundColor: theme.colors.primary + "10" }]}>
               <Ionicons name="location-outline" size={24} color={theme.colors.primary} />
@@ -179,14 +154,12 @@ export default function EventDetailScreen() {
               <Text style={[styles.infoValue, { color: theme.colors.text }]}>{event.venue}</Text>
             </View>
           </View>
-
           <View style={styles.section}>
             <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Lato_700Bold" }]}>About Event</Text>
             <Text style={[styles.description, { color: theme.colors.textSecondary, fontFamily: "Lato_400Regular" }]}>
               {event.description}
             </Text>
           </View>
-          
           <View style={styles.attendeeSection}>
              <Ionicons name="people" size={24} color={theme.colors.primary} />
              <Text style={[styles.attendeeCount, { color: theme.colors.primary, fontFamily: "Lato_700Bold" }]}>
@@ -195,7 +168,6 @@ export default function EventDetailScreen() {
           </View>
         </View>
       </ScrollView>
-
       <View style={[styles.footer, { paddingBottom: insets.bottom + 20, backgroundColor: theme.colors.background }]}>
         <PrimaryButton
           title={registering ? "Processing..." : isRegistered ? "Cancel Registration" : "Register Now"}
@@ -208,7 +180,6 @@ export default function EventDetailScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   banner: { width: "100%", height: 250 },

@@ -16,34 +16,27 @@ import { useAuth } from "@/utils/auth/useAuth";
 import { useTheme } from "@/utils/theme";
 import PrimaryButton from "@/components/PrimaryButton";
 import Ionicons from "@expo/vector-icons/Ionicons";
-
 export default function LoginScreen() {
   const insets = useSafeAreaInsets();
   const theme = useTheme();
   const { signInWithEmail, signUpWithEmail } = useAuth();
-
   const [isRegistering, setIsRegistering] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-
   const handleAuthentication = async () => {
     if (!email.trim() || !password.trim()) {
       Alert.alert("Error", "Please enter both email and password.");
       return;
     }
-
     setLoading(true);
     try {
       if (isRegistering) {
-        // Use your professional signUp logic
         await signUpWithEmail(email.trim(), password);
         Alert.alert("Success", "Account created successfully!");
       } else {
-        // Use your professional signIn logic
         await signInWithEmail(email.trim(), password);
       }
-      // Navigation is handled automatically by your RootLayout auth listener
     } catch (error) {
       console.error("Auth Error:", error);
       Alert.alert("Authentication Failed", error.message || "Please check your credentials.");
@@ -51,7 +44,6 @@ export default function LoginScreen() {
       setLoading(false);
     }
   };
-
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -64,7 +56,6 @@ export default function LoginScreen() {
       >
         <View style={[styles.container, { paddingTop: insets.top + 60, paddingBottom: insets.bottom + 40 }]}>
           <StatusBar style={theme.colors.statusBarStyle} />
-          
           <View style={styles.header}>
             <View style={[styles.iconContainer, { backgroundColor: theme.colors.primary + "15" }]}>
               <Ionicons name="business" size={40} color={theme.colors.primary} />
@@ -76,7 +67,6 @@ export default function LoginScreen() {
               {isRegistering ? "Create your student account" : "Smart Campus Management"}
             </Text>
           </View>
-
           <View style={styles.form}>
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: theme.colors.textSecondary, fontFamily: "Lato_600SemiBold" }]}>
@@ -85,10 +75,10 @@ export default function LoginScreen() {
               <TextInput
                 style={[
                   styles.input,
-                  { 
-                    backgroundColor: theme.colors.surface, 
-                    color: theme.colors.text, 
-                    borderColor: theme.colors.border 
+                  {
+                    backgroundColor: theme.colors.surface,
+                    color: theme.colors.text,
+                    borderColor: theme.colors.border
                   }
                 ]}
                 placeholder="your.name@college.edu"
@@ -99,7 +89,6 @@ export default function LoginScreen() {
                 keyboardType="email-address"
               />
             </View>
-
             <View style={styles.inputGroup}>
               <Text style={[styles.label, { color: theme.colors.textSecondary, fontFamily: "Lato_600SemiBold" }]}>
                 Password
@@ -107,10 +96,10 @@ export default function LoginScreen() {
               <TextInput
                 style={[
                   styles.input,
-                  { 
-                    backgroundColor: theme.colors.surface, 
-                    color: theme.colors.text, 
-                    borderColor: theme.colors.border 
+                  {
+                    backgroundColor: theme.colors.surface,
+                    color: theme.colors.text,
+                    borderColor: theme.colors.border
                   }
                 ]}
                 placeholder="••••••••"
@@ -120,7 +109,6 @@ export default function LoginScreen() {
                 secureTextEntry
               />
             </View>
-
             <PrimaryButton
               title={loading ? "Processing..." : isRegistering ? "Create Account" : "Sign In"}
               onPress={handleAuthentication}
@@ -128,8 +116,7 @@ export default function LoginScreen() {
               gradient
               style={styles.submitButton}
             />
-
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => setIsRegistering(!isRegistering)}
               style={styles.toggleContainer}
               disabled={loading}
@@ -142,7 +129,6 @@ export default function LoginScreen() {
               </Text>
             </TouchableOpacity>
           </View>
-
           <View style={styles.footer}>
             <Text style={[styles.footerText, { color: theme.colors.textTertiary, fontFamily: "Lato_400Regular" }]}>
               By continuing, you agree to our Terms & Privacy Policy
@@ -153,7 +139,6 @@ export default function LoginScreen() {
     </KeyboardAvoidingView>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,

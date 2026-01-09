@@ -1,6 +1,5 @@
 import { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import type { StyleProp, ViewStyle } from 'react-native';
-
 type Props = {
 	source: { uri?: string; html?: string; headers?: Record<string, string> };
 	style?: StyleProp<ViewStyle>;
@@ -22,10 +21,6 @@ type Props = {
 	scrollEnabled?: boolean;
 	bounces?: boolean;
 };
-
-/**
- * Web-based implementation of React Native WebView using iframe
- */
 export const WebView = forwardRef((props: Props, ref) => {
 	const iframeRef = useRef<HTMLIFrameElement>(null);
 	const {
@@ -38,7 +33,6 @@ export const WebView = forwardRef((props: Props, ref) => {
 		onLoadEnd,
 		onNavigationStateChange,
 	} = props;
-
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent) => {
 			onMessage?.({ nativeEvent: { data: event.data } });
@@ -46,8 +40,6 @@ export const WebView = forwardRef((props: Props, ref) => {
 		window.addEventListener('message', handleMessage);
 		return () => window.removeEventListener('message', handleMessage);
 	}, [onMessage]);
-
-	// Imperative handle to match RN WebView API
 	useImperativeHandle(ref, () => ({
 		injectJavaScript: (js: string) => {
 			iframeRef.current?.contentWindow?.postMessage(js, '*');
@@ -62,14 +54,11 @@ export const WebView = forwardRef((props: Props, ref) => {
 			iframeRef.current?.contentWindow?.location.reload();
 		},
 		stopLoading: () => {
-			// Not directly possible with iframe
 		},
 	}));
-
 	const src = source.html
 		? `data:text/html;charset=utf-8,${encodeURIComponent(source.html)}`
 		: source.uri;
-
 	return (
 		<iframe
 			ref={iframeRef}
@@ -105,5 +94,4 @@ export const WebView = forwardRef((props: Props, ref) => {
 		/>
 	);
 });
-
 export default WebView;

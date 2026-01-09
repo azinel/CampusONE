@@ -1,5 +1,4 @@
 const VALUE_BYTES_LIMIT = 2048;
-
 const KEYCHAIN_CONSTANTS = {
 	AFTER_FIRST_UNLOCK: 0,
 	AFTER_FIRST_UNLOCK_THIS_DEVICE_ONLY: 1,
@@ -9,7 +8,6 @@ const KEYCHAIN_CONSTANTS = {
 	WHEN_UNLOCKED: 5,
 	WHEN_UNLOCKED_THIS_DEVICE_ONLY: 6,
 };
-
 export type KeychainAccessibilityConstant = number;
 export const {
 	AFTER_FIRST_UNLOCK,
@@ -20,31 +18,26 @@ export const {
 	WHEN_UNLOCKED,
 	WHEN_UNLOCKED_THIS_DEVICE_ONLY,
 } = KEYCHAIN_CONSTANTS;
-
 export type SecureStoreOptions = {
 	keychainService?: string;
 	requireAuthentication?: boolean;
 	authenticationPrompt?: string;
 	keychainAccessible?: KeychainAccessibilityConstant;
 };
-
 function isValidValue(value: string) {
 	if (typeof value !== 'string') {
 		return false;
 	}
 	if (new Blob([value]).size > VALUE_BYTES_LIMIT) {
-		// biome-ignore lint/suspicious/noConsole: useful for debugging
 		console.warn(
 			`Value being stored in SecureStore is larger than ${VALUE_BYTES_LIMIT} bytes and it may not be stored successfully.`
 		);
 	}
 	return true;
 }
-
 function getStorageKey(key: string): string {
 	return `_create_secure_store_${key}`;
 }
-
 export async function isAvailableAsync(): Promise<boolean> {
 	const testKey = '__SECURE_STORE_AVAILABILITY_TEST_KEY__';
 	try {
@@ -58,21 +51,18 @@ export async function isAvailableAsync(): Promise<boolean> {
 		return false;
 	}
 }
-
 export async function deleteItemAsync(
 	key: string,
 	_options: SecureStoreOptions = {}
 ): Promise<void> {
 	localStorage.removeItem(getStorageKey(key));
 }
-
 export async function getItemAsync(
 	key: string,
 	_options: SecureStoreOptions = {}
 ): Promise<string | null> {
 	return localStorage.getItem(getStorageKey(key));
 }
-
 export async function setItemAsync(
 	key: string,
 	value: string,
@@ -85,7 +75,6 @@ export async function setItemAsync(
 	}
 	localStorage.setItem(getStorageKey(key), value);
 }
-
 export function setItem(
 	key: string,
 	value: string,
@@ -98,14 +87,12 @@ export function setItem(
 	}
 	localStorage.setItem(getStorageKey(key), value);
 }
-
 export function getItem(
 	key: string,
 	_options: SecureStoreOptions = {}
 ): string | null {
 	return localStorage.getItem(getStorageKey(key));
 }
-
 export function canUseBiometricAuthentication(): boolean {
 	return false;
 }

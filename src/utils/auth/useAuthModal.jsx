@@ -7,42 +7,15 @@ import { useAuthStore, useAuthModal } from './store';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import app from '../firebase';
 const firebaseAuth = getAuth(app);
-
-
-/**
- * This component renders a modal for authentication purposes.
- * To show it programmatically, you should either use the `useRequireAuth` hook or the `useAuthModal` hook.
- *
- * @example
- * ```js
- * import { useAuthModal } from '@/utils/useAuthModal';
- * function MyComponent() {
- * const { open } = useAuthModal();
- * return <Button title="Login" onPress={() => open({ mode: 'signin' })} />;
- * }
- * ```
- *
- * @example
- * ```js
- * import { useRequireAuth } from '@/utils/useAuth';
- * function MyComponent() {
- *   // automatically opens the auth modal if the user is not authenticated
- *   useRequireAuth();
- *   return <Text>Protected Content</Text>;
- * }
- *
- */
 export const AuthModal = () => {
   const { isOpen, mode } = useAuthModal();
   const { auth } = useAuthStore();
-
   const snapPoints = useMemo(() => ['100%'], []);
   const proxyURL = process.env.EXPO_PUBLIC_PROXY_BASE_URL;
   const baseURL = process.env.EXPO_PUBLIC_BASE_URL;
   if (!proxyURL && !baseURL) {
     return null;
   }
-
   const [showEmailForm, setShowEmailForm] = React.useState(false);
   const [email, setEmail] = React.useState('');
   const [password, setPassword] = React.useState('');
@@ -51,7 +24,6 @@ export const AuthModal = () => {
     try {
       setLoading(true);
       await signInWithEmailAndPassword(firebaseAuth, email.trim(), password);
-      // onAuthStateChanged listener in useAuth will pick up changes and close modal
     } catch (e) {
       console.error('Email sign-in failed:', e);
       Alert.alert('Sign-in failed', e?.message || 'Failed to sign in');
@@ -59,12 +31,10 @@ export const AuthModal = () => {
       setLoading(false);
     }
   };
-
   const handleEmailSignUp = async () => {
     try {
       setLoading(true);
       await createUserWithEmailAndPassword(firebaseAuth, email.trim(), password);
-      // onAuthStateChanged listener will pick up new user
     } catch (e) {
       console.error('Email sign-up failed:', e);
       Alert.alert('Sign-up failed', e?.message || 'Failed to sign up');
@@ -72,7 +42,6 @@ export const AuthModal = () => {
       setLoading(false);
     }
   };
-
   return (
     <Modal
       visible={isOpen && !auth}
@@ -150,5 +119,4 @@ export const AuthModal = () => {
     </Modal>
   );
 };
-
 export default useAuthModal;

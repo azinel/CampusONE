@@ -8,14 +8,8 @@ const {
   VIRTUAL_ROOT,
   VIRTUAL_ROOT_UNRESOLVED,
 } = require('./__create/handle-resolve-request-error');
-
-/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
-
-// --- FIX START: Enable WASM support ---
 config.resolver.assetExts.push('wasm');
-// --- FIX END ---
-
 const WEB_ALIASES = {
   'expo-secure-store': path.resolve(__dirname, './polyfills/web/secureStore.web.ts'),
   'react-native-webview': path.resolve(__dirname, './polyfills/web/webview.web.tsx'),
@@ -54,11 +48,8 @@ const SHARED_ALIASES = {
 };
 fs.mkdirSync(VIRTUAL_ROOT_UNRESOLVED, { recursive: true });
 config.watchFolders = [...config.watchFolders, VIRTUAL_ROOT, VIRTUAL_ROOT_UNRESOLVED];
-
-// Add web-specific alias configuration through resolveRequest
 config.resolver.resolveRequest = (context, moduleName, platform) => {
   try {
-    // Polyfills are not resolved by Metro
     if (
       context.originModulePath.startsWith(`${__dirname}/polyfills/native`) ||
       context.originModulePath.startsWith(`${__dirname}/polyfills/web`) ||
@@ -66,7 +57,6 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     ) {
       return context.resolveRequest(context, moduleName, platform);
     }
-    // Wildcard alias for Expo Google Fonts
     if (moduleName.startsWith('@expo-google-fonts/') && moduleName !== '@expo-google-fonts/dev') {
       return context.resolveRequest(context, '@expo-google-fonts/dev', platform);
     }
@@ -74,13 +64,11 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
       return context.resolveRequest(context, SHARED_ALIASES[moduleName], platform);
     }
     if (platform === 'web') {
-      // Only apply aliases if the module is one of our polyfills
       if (WEB_ALIASES[moduleName] && !moduleName.startsWith('./polyfills/')) {
         return context.resolveRequest(context, WEB_ALIASES[moduleName], platform);
       }
       return context.resolveRequest(context, moduleName, platform);
     }
-
     if (NATIVE_ALIASES[moduleName] && !moduleName.startsWith('./polyfills/')) {
       return context.resolveRequest(context, NATIVE_ALIASES[moduleName], platform);
     }
@@ -89,9 +77,7 @@ config.resolver.resolveRequest = (context, moduleName, platform) => {
     return handleResolveRequestError({ error, context, platform, moduleName });
   }
 };
-
 const cacheDir = path.join(__dirname, 'caches');
-
 config.cacheStores = () => [
   new FileStore({
     root: path.join(cacheDir, '.metro-cache'),
@@ -113,25 +99,21 @@ config.reporter = {
     for (const errorType of reportableErrors) {
       if (event.type === errorType) {
         reportErrorToRemote({ error: event.error }).catch((reportError) => {
-          // no-op
         });
       }
     }
     return event;
   },
 };
-
 const originalGetTransformOptions = config.transformer.getTransformOptions;
-
 config.transformer = {
   ...config.transformer,
   getTransformOptions: async (entryPoints, options) => {
-    if (options.dev === false) { 
+    if (options.dev === false) {
       fs.rmSync(cacheDir, { recursive: true, force: true });
       fs.mkdirSync(cacheDir);
     }
     return await originalGetTransformOptions(entryPoints, options)
   },
 }
-
 module.exports = config;

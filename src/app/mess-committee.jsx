@@ -1,12 +1,12 @@
 import React from "react";
-import { 
-  View, 
-  Text, 
-  ScrollView, 
-  StyleSheet, 
-  TouchableOpacity, 
-  Linking, // Added to enable dialing
-  Alert 
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+  Linking,
+  Alert
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
@@ -14,13 +14,10 @@ import { useRouter } from "expo-router";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
-
 export default function MessCommitteeScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
-
-  // ✅ Back Button Logic
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -28,8 +25,6 @@ export default function MessCommitteeScreen() {
       router.replace("/(tabs)");
     }
   };
-
-  // ✅ Call Function
   const handleCall = (phoneNumber) => {
     const url = `tel:${phoneNumber}`;
     Linking.canOpenURL(url)
@@ -42,28 +37,24 @@ export default function MessCommitteeScreen() {
       })
       .catch((err) => console.error("An error occurred", err));
   };
-
   const members = [
     { name: "Rahul Sharma", role: "Mess Secretary", phone: "+91 98765 43210" },
     { name: "Priya Patel", role: "Joint Secretary", phone: "+91 91234 56789" },
     { name: "Amit Kumar", role: "Menu Coordinator", phone: "+91 88997 76655" },
     { name: "Sunita Reddy", role: "Hygiene In-charge", phone: "+91 77788 99900" },
   ];
-
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <StatusBar style={theme.colors.statusBarStyle} />
-      
       <View style={{ paddingTop: insets.top }}>
-        <ScreenHeader 
-          title="Mess Committee" 
-          showBackButton 
-          onBackPress={handleBack} 
+        <ScreenHeader
+          title="Mess Committee"
+          showBackButton
+          onBackPress={handleBack}
         />
       </View>
-
       <ScrollView contentContainerStyle={styles.content}>
-        {/* Daily Menu Card */}
+        {}
         <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
           <View style={styles.cardHeader}>
             <Ionicons name="restaurant" size={20} color={theme.colors.primary} />
@@ -79,27 +70,23 @@ export default function MessCommitteeScreen() {
             <Text style={{ color: theme.colors.text, fontWeight: 'bold', fontSize: 15 }}>Egg Curry / Paneer Butter Masala</Text>
           </View>
         </View>
-
         <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>Committee Members</Text>
-        
         {members.map((member, index) => (
           <View key={index} style={[styles.memberCard, { backgroundColor: theme.colors.surface }]}>
-            {/* Avatar Circle */}
+            {}
             <View style={[styles.avatar, { backgroundColor: theme.colors.primary }]}>
                <Text style={{ color: '#FFF', fontWeight: 'bold', fontSize: 16 }}>
                  {member.name.charAt(0)}
                </Text>
             </View>
-
-            {/* Info Section - Phone Number is Visible Here */}
+            {}
             <View style={{ flex: 1 }}>
               <Text style={[styles.name, { color: theme.colors.text }]}>{member.name}</Text>
               <Text style={[styles.role, { color: theme.colors.primary }]}>{member.role}</Text>
               <Text style={[styles.phone, { color: theme.colors.textSecondary }]}>{member.phone}</Text>
             </View>
-
-            {/* Call Button */}
-            <TouchableOpacity 
+            {}
+            <TouchableOpacity
               style={[styles.callBtn, { backgroundColor: '#10B981' }]}
               onPress={() => handleCall(member.phone)}
             >
@@ -111,7 +98,6 @@ export default function MessCommitteeScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: 20 },
@@ -121,11 +107,10 @@ const styles = StyleSheet.create({
   menuItem: { gap: 4, marginBottom: 8 },
   divider: { height: 1, marginVertical: 10 },
   sectionTitle: { fontSize: 14, fontWeight: '700', marginBottom: 12, textTransform: 'uppercase', letterSpacing: 1 },
-  
   memberCard: { flexDirection: 'row', alignItems: 'center', padding: 16, borderRadius: 16, marginBottom: 12, elevation: 1 },
   avatar: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginRight: 14 },
   name: { fontSize: 16, fontWeight: 'bold', marginBottom: 2 },
   role: { fontSize: 12, fontWeight: '600', marginBottom: 2 },
-  phone: { fontSize: 13, fontWeight: '500', marginTop: 2 }, // Added style for visible phone number
+  phone: { fontSize: 13, fontWeight: '500', marginTop: 2 },
   callBtn: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
 });

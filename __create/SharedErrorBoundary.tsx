@@ -1,7 +1,6 @@
 import { isErrorLike, serializeError } from 'serialize-error';
 import React, { type ReactNode, useEffect, useState, useCallback, useRef } from 'react';
 import { Animated, Text, View } from 'react-native';
-
 export function SharedErrorBoundary({
   isOpen,
   children,
@@ -13,7 +12,6 @@ export function SharedErrorBoundary({
 }): React.ReactElement {
   const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
   const [contentHeight, setContentHeight] = useState<number>(0);
-
   useEffect(() => {
     Animated.timing(animation, {
       toValue: isOpen ? 1 : 0,
@@ -21,15 +19,11 @@ export function SharedErrorBoundary({
       useNativeDriver: true,
     }).start();
   }, [isOpen, animation]);
-
   const translateY = animation.interpolate({
     inputRange: [0, 1],
-    // fallback 100 if height not measured yet so it starts off-screen
     outputRange: [Math.max(contentHeight + 34, 100), 0],
   });
-
   const opacity = animation;
-
   return (
     <Animated.View
       pointerEvents={isOpen ? 'auto' : 'none'}
@@ -75,7 +69,6 @@ export function SharedErrorBoundary({
               <Text style={{ color: '#000', fontSize: 18, lineHeight: 18 }}>⚠</Text>
             </View>
           </View>
-
           <View style={{ flex: 1, gap: 8 }}>
             <View style={{ gap: 4 }}>
               <Text style={{ color: '#F2F2F2', fontSize: 14, fontWeight: '300' }}>
@@ -121,7 +114,6 @@ export function Button({
     </View>
   );
 }
-
 function InternalErrorBoundary({
   error: errorArg = null,
 }: {
@@ -154,7 +146,6 @@ function InternalErrorBoundary({
     navigator.clipboard.writeText(text);
     setIsOpen(false);
   }, [errorArg]);
-
   function isInIframe() {
     try {
       return window.parent !== window;
@@ -183,9 +174,7 @@ function InternalErrorBoundary({
     </SharedErrorBoundary>
   );
 }
-
 type ErrorBoundaryState = { hasError: boolean; error: unknown | null };
-
 export class ErrorBoundaryWrapper extends React.Component<
   {
     children: ReactNode;
@@ -193,15 +182,12 @@ export class ErrorBoundaryWrapper extends React.Component<
   ErrorBoundaryState
 > {
   state: ErrorBoundaryState = { hasError: false, error: null };
-
   static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
     return { hasError: true, error };
   }
-
   componentDidCatch(error: unknown, info: unknown) {
     console.warn(error, info);
   }
-
   render() {
     if (this.state.hasError) {
       return <InternalErrorBoundary error={this.state.error} />;

@@ -8,13 +8,12 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
-  Image, // SWITCHED: Using standard React Native Image for maximum stability
+  Image,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import * as ImagePicker from "expo-image-picker";
-// REMOVED: import { Image } from "expo-image"; (Potential crash source)
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
@@ -22,12 +21,10 @@ import PrimaryButton from "@/components/PrimaryButton";
 import useUpload from "@/utils/useUpload";
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '@/utils/firebase';
-
 export default function CreateComplaintScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
-
   const [upload, { loading: uploading }] = useUpload();
   const [category, setCategory] = useState("");
   const [title, setTitle] = useState("");
@@ -35,15 +32,12 @@ export default function CreateComplaintScreen() {
   const [hostel, setHostel] = useState("");
   const [roomNumber, setRoomNumber] = useState("");
   const [photoAsset, setPhotoAsset] = useState(null);
-
   const [studentName, setStudentName] = useState(auth.currentUser?.displayName || "");
   const [studentEmail] = useState(auth.currentUser?.email || "");
   const [submitting, setSubmitting] = useState(false);
-
   const isBusy = submitting || uploading;
   const categories = ["Water", "Electricity", "WiFi", "Cleaning", "Other"];
   const hostels = ["Hostel A", "Hostel B", "Hostel C", "Hostel D"];
-
   const pickImage = async () => {
     try {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -51,13 +45,11 @@ export default function CreateComplaintScreen() {
         Alert.alert("Permission Required", "Please allow access to your photos.");
         return;
       }
-
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ['images'],
-        allowsEditing: false, // CRITICAL FIX: Disabled editing to prevent Android activity crashes
+        allowsEditing: false,
         quality: 0.5,
       });
-
       if (!result.canceled) {
         setPhotoAsset(result.assets[0]);
       }
@@ -66,80 +58,61 @@ export default function CreateComplaintScreen() {
       Alert.alert("Error", "Could not select image.");
     }
   };
-
   const handleSubmit = async () => {
-    // 1. Validation
     if (!category || !title.trim() || !description.trim() || !hostel || !roomNumber.trim()) {
       Alert.alert("Missing Info", "Please fill all fields marked with *");
       return;
     }
-
     try {
       console.log("--- Starting Submission ---");
       setSubmitting(true);
       let finalPhotoUrl = null;
-
-      // 2. Upload to Cloudinary (if photo exists)
       if (photoAsset) {
         console.log("Step A: Uploading photo...");
         const { url, error } = await upload({ reactNativeAsset: photoAsset });
-        
         if (error) {
           console.error("Upload Error:", error);
           Alert.alert("Upload Failed", "Could not upload image.");
           setSubmitting(false);
           return;
         }
-        
         console.log("Step A Success: URL received ->", url);
         finalPhotoUrl = url;
       }
-
-      // 3. Prepare Data (CRITICAL: Ensure no 'undefined' values)
       const complaintData = {
         category: category || "General",
         title: title.trim(),
         description: description.trim(),
         hostel: hostel || "Unknown",
         room_number: roomNumber.trim(),
-        // FIX: Firestore crashes if this is undefined, so we force null
-        photo_url: finalPhotoUrl || null, 
+        photo_url: finalPhotoUrl || null,
         student_name: studentName.trim() || "Anonymous",
         student_email: studentEmail.toLowerCase() || "no-email",
         status: 'Pending',
         priority: 1,
         created_at: serverTimestamp(),
       };
-
       console.log("Step B: Saving to Firestore...", complaintData);
-
-      // 4. Save to Firestore
       const docRef = await addDoc(collection(db, 'complaints'), complaintData);
-      
       console.log("Step B Success: Document ID ->", docRef.id);
-
-      // 5. Success Alert
       Alert.alert(
         "Success!",
         "Complaint Submitted Successfully.",
         [
-          { 
-            text: "OK", 
+          {
+            text: "OK",
             onPress: () => {
               console.log("Navigating to:", `/(tabs)/complaint/${docRef.id}`);
-              // Use try-catch for router in case the path is wrong
               try {
                 router.replace(`/(tabs)/complaint/${docRef.id}`);
               } catch (navError) {
                 console.error("Navigation Error:", navError);
-                // Fallback: just go back to home if details page fails
-                router.replace("/(tabs)"); 
+                router.replace("/(tabs)");
               }
             }
           }
         ]
       );
-
     } catch (error) {
       console.error("CRITICAL SUBMISSION ERROR:", error);
       Alert.alert("Submission Error", error.message || "Could not save to database.");
@@ -147,20 +120,16 @@ export default function CreateComplaintScreen() {
       setSubmitting(false);
     }
   };
-
   const inputStyle = [
     styles.input,
     { backgroundColor: theme.isDark ? "#2A2A2A" : "#FFFFFF", color: theme.colors.text, borderColor: theme.colors.outline }
   ];
-
   return (
     <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <StatusBar style={theme.colors.statusBarStyle} />
-      
-      {/* Container */}
+      {}
       <View style={{ flex: 1, paddingTop: insets.top }}>
         <ScreenHeader title="New Complaint" showBackButton onBackPress={() => router.back()} />
-
         <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
@@ -168,13 +137,11 @@ export default function CreateComplaintScreen() {
           keyboardShouldPersistTaps="handled"
         >
           <View style={styles.form}>
-            
-            {/* Identity */}
+            {}
             <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>Reporter Identity</Text>
             <TextInput style={inputStyle} placeholder="Full Name" placeholderTextColor={theme.colors.textTertiary} value={studentName} onChangeText={setStudentName} />
             <TextInput style={[inputStyle, { opacity: 0.7 }]} value={studentEmail} editable={false} />
-
-            {/* Details */}
+            {}
             <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>Category</Text>
             <View style={styles.grid}>
               {categories.map((cat) => (
@@ -183,11 +150,9 @@ export default function CreateComplaintScreen() {
                 </TouchableOpacity>
               ))}
             </View>
-
             <TextInput style={inputStyle} placeholder="Subject *" placeholderTextColor={theme.colors.textTertiary} value={title} onChangeText={setTitle} />
             <TextInput style={[styles.textArea, { backgroundColor: theme.isDark ? "#2A2A2A" : "#FFFFFF", color: theme.colors.text, borderColor: theme.colors.outline }]} placeholder="Details... *" placeholderTextColor={theme.colors.textTertiary} value={description} onChangeText={setDescription} multiline />
-
-            {/* Location */}
+            {}
             <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>Location</Text>
             <View style={styles.grid}>
               {hostels.map((h) => (
@@ -197,12 +162,11 @@ export default function CreateComplaintScreen() {
               ))}
             </View>
             <TextInput style={inputStyle} placeholder="Room Number *" placeholderTextColor={theme.colors.textTertiary} value={roomNumber} onChangeText={setRoomNumber} />
-
-            {/* Photo Evidence */}
+            {}
             <TouchableOpacity style={[styles.photoUpload, { backgroundColor: theme.colors.surface, borderColor: theme.colors.border }]} onPress={pickImage} activeOpacity={0.7}>
               {photoAsset ? (
                 <View style={styles.previewContainer}>
-                  {/* Using Standard React Native Image */}
+                  {}
                   <Image source={{ uri: photoAsset.uri }} style={styles.photoImage} resizeMode="cover" />
                   <View style={styles.photoOverlay}>
                     <Ionicons name="refresh" size={24} color="#FFF" />
@@ -216,11 +180,9 @@ export default function CreateComplaintScreen() {
                 </View>
               )}
             </TouchableOpacity>
-
             <PrimaryButton title={isBusy ? "Processing..." : "Submit Complaint"} onPress={handleSubmit} disabled={isBusy} gradient />
-          </View> 
+          </View>
         </ScrollView>
-
         {isBusy && (
           <View style={styles.loadingOverlay}>
             <View style={[styles.loadingCard, { backgroundColor: theme.colors.surface }]}>
@@ -235,7 +197,6 @@ export default function CreateComplaintScreen() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   form: { paddingHorizontal: 20, paddingBottom: 40 },
   sectionTitle: { fontSize: 12, textTransform: 'uppercase', letterSpacing: 1, fontWeight: '700', marginBottom: 8, marginTop: 16 },

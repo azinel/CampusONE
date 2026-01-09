@@ -6,7 +6,6 @@ import type { NotificationHandler } from 'expo-notifications/src/NotificationsHa
 import { toast } from 'sonner-native';
 import * as Notifications from 'expo-notifications';
 const { PermissionStatus } = Notifications;
-
 const scheduledNotifications = new Map<
   string,
   {
@@ -14,11 +13,8 @@ const scheduledNotifications = new Map<
     request: NotificationRequest;
   }
 >();
-
 export const setNotificationHandler = (handler: NotificationHandler | null): void => {
-  //no-op
 };
-
 export const requestPermissionsAsync = async (): Promise<PermissionResponse> => {
   return {
     status: PermissionStatus.GRANTED,
@@ -27,13 +23,11 @@ export const requestPermissionsAsync = async (): Promise<PermissionResponse> => 
     canAskAgain: true,
   };
 };
-
 export const scheduleNotificationAsync = async (
   notificationRequest: NotificationRequest
 ): Promise<string> => {
   const { content, trigger } = notificationRequest;
   const { title, body } = content;
-
   let message = '';
   if (title && body) {
     message = `${title}\n${body}`;
@@ -44,29 +38,23 @@ export const scheduleNotificationAsync = async (
   } else {
     return '';
   }
-
   const identifier = Math.random().toString(36).substr(2, 9);
-
   const timeoutId = setTimeout(() => {
     toast(message);
     scheduledNotifications.delete(identifier);
   }, 1000);
-
   scheduledNotifications.set(identifier, {
     timeoutId,
     request: notificationRequest,
   });
-
   return identifier;
 };
-
 export const cancelAllScheduledNotificationsAsync = async (): Promise<void> => {
   for (const { timeoutId } of scheduledNotifications.values()) {
     clearTimeout(timeoutId);
   }
   scheduledNotifications.clear();
 };
-
 export const cancelScheduledNotificationAsync = async (identifier: string): Promise<void> => {
   const scheduledNotification = scheduledNotifications.get(identifier);
   if (scheduledNotification) {
@@ -74,7 +62,6 @@ export const cancelScheduledNotificationAsync = async (identifier: string): Prom
     scheduledNotifications.delete(identifier);
   }
 };
-
 export const getAllScheduledNotificationsAsync = async (): Promise<NotificationRequest[]> => {
   return Array.from(scheduledNotifications.values()).map(({ request }) => request);
 };

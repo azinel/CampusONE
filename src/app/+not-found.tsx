@@ -11,7 +11,6 @@ import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ErrorBoundaryWrapper } from '../../__create/SharedErrorBoundary';
-
 interface ParentSitemap {
   expoPages?: Array<{
     id: string;
@@ -20,13 +19,11 @@ interface ParentSitemap {
     cleanRoute?: string;
   }>;
 }
-
 function NotFoundScreen() {
   const router = useRouter();
   const params = useGlobalSearchParams();
   const expoSitemap = useSitemap();
   const [sitemap, setSitemap] = useState<SitemapType | ParentSitemap | null>(expoSitemap);
-
   useEffect(() => {
     if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
       const handler = (event: MessageEvent) => {
@@ -35,7 +32,6 @@ function NotFoundScreen() {
           setSitemap(event.data.sitemap);
         }
       };
-
       window.parent.postMessage(
         {
           type: 'sandbox:sitemap',
@@ -43,16 +39,13 @@ function NotFoundScreen() {
         '*'
       );
       window.addEventListener('message', handler);
-
       return () => {
         window.removeEventListener('message', handler);
       };
     }
   }, []);
-
   const isExpoSitemap = sitemap === expoSitemap;
   const missingPath = params['not-found']?.[0] || '';
-
   const availableRoutes = useMemo(() => {
     return (
       expoSitemap?.children?.filter(
@@ -65,7 +58,6 @@ function NotFoundScreen() {
       ) || []
     );
   }, [expoSitemap]);
-
   const handleBack = () => {
     if (router.canGoBack()) {
       router.back();
@@ -86,7 +78,6 @@ function NotFoundScreen() {
       }
     }
   };
-
   const handleNavigate = (url: string) => {
     try {
       if (url) {
@@ -96,7 +87,6 @@ function NotFoundScreen() {
       console.error('Navigation error:', error);
     }
   };
-
   const handleCreatePage = useCallback(() => {
     if (typeof window !== 'undefined' && window.parent && window.parent !== window) {
       window.parent.postMessage(
@@ -129,15 +119,12 @@ function NotFoundScreen() {
               </View>
             </View>
           </View>
-
           <View style={styles.mainContent}>
             <Text style={styles.title}>Uh-oh! This screen doesn't exist (yet).</Text>
-
             <Text style={styles.subtitle}>
               Looks like "<Text style={styles.boldText}>/{missingPath}</Text>" isn't part of your
               project. But no worries, you've got options!
             </Text>
-
             {typeof window !== 'undefined' && window.parent && window.parent !== window && (
               <View style={styles.createPageContainer}>
                 <View style={styles.createPageContent}>
@@ -158,7 +145,6 @@ function NotFoundScreen() {
                 </View>
               </View>
             )}
-
             <Text style={styles.routesLabel}>Check out all your project's routes here ↓</Text>
             {!isExpoSitemap && sitemap ? (
               <View style={styles.pagesContainer}>
@@ -182,7 +168,6 @@ function NotFoundScreen() {
                   {(availableRoutes as SitemapType[]).map((route: SitemapType, index: number) => {
                     const url =
                       typeof route.href === 'string' ? route.href : route.href?.pathname || '/';
-
                     if (url === '/(tabs)' && route.children) {
                       return route.children.map((childRoute: SitemapType) => {
                         const childUrl =
@@ -192,7 +177,7 @@ function NotFoundScreen() {
                         const displayPath =
                           childUrl === '/(tabs)'
                             ? 'Homepage'
-                            : childUrl.replace(/^\//, '').replace(/^\(tabs\)\//, '');
+                            : childUrl.replace(/^\
                         return (
                           <TouchableOpacity
                             key={childRoute.contextKey}
@@ -204,9 +189,7 @@ function NotFoundScreen() {
                         );
                       });
                     }
-
-                    const displayPath = url === '/' ? 'Homepage' : url.replace(/^\//, '');
-
+                    const displayPath = url === '/' ? 'Homepage' : url.replace(/^\
                     return (
                       <TouchableOpacity
                         key={route.contextKey}
@@ -226,7 +209,6 @@ function NotFoundScreen() {
     </>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -354,7 +336,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
   },
-
   pagesContainer: {
     width: '100%',
     alignItems: 'center',
@@ -393,7 +374,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#999',
   },
-
   routesContainer: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -429,7 +409,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
 });
-
 export default () => {
   return (
     <ErrorBoundaryWrapper>

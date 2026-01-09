@@ -8,7 +8,6 @@ export {
   SafeAreaProvider,
   useSafeAreaFrame,
 } from 'react-native-safe-area-context/lib/commonjs';
-
 export const SafeAreaView = forwardRef(
   ({ children, edges = ['top', 'right', 'bottom', 'left'], ...rest }, forwardedRef) => {
     const isTabletAndAbove = typeof window !== 'undefined' ? window.self !== window.top : true;

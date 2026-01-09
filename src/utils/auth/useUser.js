@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import { useAuth } from './useAuth';
-
 export const useUser = () => {
 	const { auth, isReady } = useAuth();
 	const user = auth?.user || null;

@@ -1,7 +1,5 @@
 import type { LocationGeocodedAddress } from 'expo-location';
-
 type Coords = { latitude: number; longitude: number };
-
 export async function reverseGeocodeAsync({
   latitude,
   longitude,
@@ -23,12 +21,9 @@ export async function reverseGeocodeAsync({
     },
   ];
 }
-
 const NativeLocation = require('expo-location/build') as Record<string, unknown>;
-
 module.exports = {
   ...NativeLocation,
   reverseGeocodeAsync,
 };
-
 module.exports.default = module.exports;

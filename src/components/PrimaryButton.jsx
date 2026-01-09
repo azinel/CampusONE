@@ -2,30 +2,24 @@ import React from "react";
 import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/utils/theme";
-
-export default function PrimaryButton({ 
-  title, 
-  onPress, 
-  disabled = false, 
+export default function PrimaryButton({
+  title,
+  onPress,
+  disabled = false,
   gradient = false,
-  style 
+  style
 }) {
   const theme = useTheme();
-
-  // If gradient is true, we wrap the content in LinearGradient
-  // If false, we use a standard View-like style
   const ButtonContent = () => (
     <>
       {disabled && (title === "Processing..." || title === "Uploading...") ? (
         <ActivityIndicator color="#FFF" style={{ marginRight: 8 }} />
       ) : null}
-      
       <Text style={styles.text}>
         {title}
       </Text>
     </>
   );
-
   if (gradient) {
     return (
       <TouchableOpacity
@@ -35,7 +29,7 @@ export default function PrimaryButton({
         style={[styles.container, style, disabled && styles.disabled]}
       >
         <LinearGradient
-          colors={[theme.colors.primary, '#4F46E5']} // Adjust secondary color as needed
+          colors={[theme.colors.primary, '#4F46E5']}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradient}
@@ -45,17 +39,16 @@ export default function PrimaryButton({
       </TouchableOpacity>
     );
   }
-
   return (
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
       activeOpacity={0.8}
       style={[
-        styles.container, 
-        styles.solid, 
-        { backgroundColor: theme.colors.primary }, 
-        style, 
+        styles.container,
+        styles.solid,
+        { backgroundColor: theme.colors.primary },
+        style,
         disabled && styles.disabled
       ]}
     >
@@ -63,20 +56,19 @@ export default function PrimaryButton({
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     borderRadius: 12,
-    overflow: 'hidden', // Ensures gradient respects border radius
+    overflow: 'hidden',
     marginVertical: 10,
-    elevation: 2, // Shadow for Android
-    shadowColor: "#000", // Shadow for iOS
+    elevation: 2,
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.2,
     shadowRadius: 3,
   },
   solid: {
-    paddingVertical: 16, // Use padding on container, not text
+    paddingVertical: 16,
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -94,11 +86,10 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 1,
-    // --- THE FIX IS HERE ---
-    lineHeight: 22,         // Gives vertical space for the font
-    paddingBottom: 2,       // Extra nudge for the 'tails' (p, q, g)
-    textAlignVertical: "center", // Android alignment fix
-    includeFontPadding: false,   // Android specific fix to remove extra top padding
+    lineHeight: 22,
+    paddingBottom: 2,
+    textAlignVertical: "center",
+    includeFontPadding: false,
   },
   disabled: {
     opacity: 0.6,

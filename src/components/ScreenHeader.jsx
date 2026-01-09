@@ -2,7 +2,6 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "../utils/theme";
-
 export default function ScreenHeader({
   title,
   subtitle,
@@ -15,7 +14,6 @@ export default function ScreenHeader({
   style,
 }) {
   const theme = useTheme();
-
   return (
     <View
       style={[
@@ -34,7 +32,6 @@ export default function ScreenHeader({
             <Ionicons name="chevron-back" size={24} color={theme.colors.text} />
           </TouchableOpacity>
         )}
-
         <View
           style={[
             styles.headerInfo,
@@ -63,7 +60,6 @@ export default function ScreenHeader({
             </Text>
           )}
         </View>
-
         {actions.length > 0 && (
           <View style={styles.headerActions}>
             {actions.map((action, index) => (
@@ -85,7 +81,6 @@ export default function ScreenHeader({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,

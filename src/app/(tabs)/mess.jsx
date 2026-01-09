@@ -8,7 +8,6 @@ import ScreenHeader from "@/components/ScreenHeader";
 import PrimaryButton from "@/components/PrimaryButton";
 import { collection, query, orderBy, limit, onSnapshot } from 'firebase/firestore';
 import { db } from '@/utils/firebase';
-
 export default function MessScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -16,18 +15,13 @@ export default function MessScreen() {
   const [feedback, setFeedback] = useState([]);
   const [analytics, setAnalytics] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  // Helper for the refresh button
   const loadData = useCallback(() => {
     setLoading(true);
-    // The onSnapshot listener below handles the actual data refresh
     setTimeout(() => setLoading(false), 500);
   }, []);
-
   useEffect(() => {
     let unsub = null;
     const q = query(collection(db, 'mess_feedback'), orderBy('created_at', 'desc'), limit(20));
-    
     unsub = onSnapshot(q, (snapshot) => {
       const docs = snapshot.docs.map(doc => ({
         id: doc.id,
@@ -35,8 +29,6 @@ export default function MessScreen() {
         created_at: doc.data().created_at?.toDate ? doc.data().created_at.toDate().toISOString() : new Date().toISOString()
       }));
       setFeedback(docs);
-
-      // Local analytics computation
       const total = docs.length;
       if (total > 0) {
         setAnalytics({
@@ -49,10 +41,8 @@ export default function MessScreen() {
       }
       setLoading(false);
     });
-
     return () => unsub();
   }, []);
-
   const renderStars = (rating) => (
     <View style={{ flexDirection: "row", gap: 2 }}>
       {[1, 2, 3, 4, 5].map(s => (
@@ -60,18 +50,16 @@ export default function MessScreen() {
       ))}
     </View>
   );
-
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
-      <ScreenHeader 
-        title="Mess Feedback" 
-        subtitle="Rate & Improve Quality" 
+      <ScreenHeader
+        title="Mess Feedback"
+        subtitle="Rate & Improve Quality"
         actions={[
-          { icon: "people-outline", onPress: () => router.push("/mess-committee") }, 
+          { icon: "people-outline", onPress: () => router.push("/mess-committee") },
           { icon: "refresh", onPress: loadData }
-        ]} 
+        ]}
       />
-      
       {loading ? (
         <View style={styles.loaderContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
@@ -86,18 +74,18 @@ export default function MessScreen() {
                     Weekly Averages
                   </Text>
                   <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
-                     {/* FIXED: High-contrast StatItems for better visibility */}
+                     {}
                      <StatItem icon="restaurant" color={theme.colors.primary} value={analytics.averages.avg_taste} label="Taste" />
                      <StatItem icon="fitness" color={theme.colors.success} value={analytics.averages.avg_hygiene} label="Hygiene" />
                      <StatItem icon="analytics" color={theme.colors.info} value={analytics.averages.avg_quantity} label="Quantity" />
                   </View>
                 </View>
               )}
-              <PrimaryButton 
-                title="Submit Feedback" 
-                onPress={() => router.push("/(tabs)/submit-feedback")} 
-                gradient 
-                style={{ marginBottom: 20 }} 
+              <PrimaryButton
+                title="Submit Feedback"
+                onPress={() => router.push("/(tabs)/submit-feedback")}
+                gradient
+                style={{ marginBottom: 20 }}
               />
             </>
           }
@@ -124,16 +112,14 @@ export default function MessScreen() {
     </View>
   );
 }
-
-// FIXED: Enhanced StatItem with theme-aware text contrast
 const StatItem = ({ icon, color, value, label }) => {
   const theme = useTheme();
   return (
     <View style={styles.statItemContainer}>
       <Ionicons name={icon} size={24} color={color} />
       <Text style={[
-        styles.statValue, 
-        { color: theme.colors.text, fontFamily: "Lato_700Bold" } // FIXED: High contrast visibility
+        styles.statValue,
+        { color: theme.colors.text, fontFamily: "Lato_700Bold" }
       ]}>
         {parseFloat(value || 0).toFixed(1)}
       </Text>
@@ -143,7 +129,6 @@ const StatItem = ({ icon, color, value, label }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: { flex: 1 },
   loaderContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },

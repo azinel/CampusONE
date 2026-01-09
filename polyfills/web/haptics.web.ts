@@ -3,7 +3,6 @@ export enum NotificationFeedbackType {
 	Warning = 'warning',
 	Error = 'error',
 }
-
 export enum ImpactFeedbackStyle {
 	Light = 'light',
 	Medium = 'medium',
@@ -11,7 +10,6 @@ export enum ImpactFeedbackStyle {
 	Soft = 'soft',
 	Rigid = 'rigid',
 }
-
 const vibrationPatterns: Record<
 	NotificationFeedbackType | ImpactFeedbackStyle | 'selection',
 	VibratePattern
@@ -26,7 +24,6 @@ const vibrationPatterns: Record<
 	[ImpactFeedbackStyle.Rigid]: [45],
 	selection: [50],
 };
-
 function isVibrationAvailable(): boolean {
 	return (
 		typeof window !== 'undefined' &&
@@ -34,14 +31,12 @@ function isVibrationAvailable(): boolean {
 		'vibrate' in navigator
 	);
 }
-
 export const selectionAsync = async (): Promise<void> => {
 	if (!isVibrationAvailable()) {
 		return;
 	}
 	navigator.vibrate(vibrationPatterns.selection);
 };
-
 export const notificationAsync = async (
 	type: NotificationFeedbackType = NotificationFeedbackType.Success
 ): Promise<void> => {
@@ -50,7 +45,6 @@ export const notificationAsync = async (
 	}
 	navigator.vibrate(vibrationPatterns[type]);
 };
-
 export const impactAsync = async (
 	style: ImpactFeedbackStyle = ImpactFeedbackStyle.Medium
 ): Promise<void> => {

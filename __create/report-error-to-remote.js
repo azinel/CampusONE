@@ -1,5 +1,4 @@
 import { serializeError } from 'serialize-error';
-
 export const reportErrorToRemote = async ({ error }) => {
   if (
     !process.env.EXPO_PUBLIC_LOGS_ENDPOINT ||
