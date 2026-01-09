@@ -25,24 +25,25 @@
 ### 📱 Student & User Experience
 | **Login & Authentication** | **Dashboard & Events** | **Profile & Settings** |
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/95ec1c3e-5332-43f0-b0ea-8559880d1f48" width="200" /> | <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> |
+| <img src="https://github.com/user-attachments/assets/95ec1c3e-5332-43f0-b0ea-8559880d1f48" width="200" /> | <img src="https://github.com/user-attachments/assets/71ac132f-b2a6-42c6-8423-2390990c5303" width="200" /> | <img src="https://github.com/user-attachments/assets/b6c50edb-46c5-4937-a8e2-5902c5077047" width="200" /> |
 | **Secure Entry** | **Real-time Campus Feed** | **User Management** |
 
 <br>
 
 ### 🚨 Complaints & Mess Management
-| **Complaint Tracking** | **Mess Feedback Form** | **Event Details** |
+| **Complaint Tracking**  | **Event Details** | **Mess Feedback** |
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" width="200" /> | <img src="https://github.com/user-attachments/assets/71ac132f-b2a6-42c6-8423-2390990c5303" width="200" /> |
-| **Live Status Updates** | **Daily Meal Rating** | **Seamless Registration** |
+| <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" width="200" /> | <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> |
+| **Live Status Updates** | **Seamless Registration** | **Daily Meal Rating** | 
 
 <br>
 
 ### 📊 Admin & Analytics Dashboard
-| **Admin Controls** | **Visual Data Insights** | **System Settings** |
+| **Mess Feedback Form** | **Admin vs User** | **Complaint Form** |
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> | <img src="https://github.com/user-attachments/assets/b6c50edb-46c5-4937-a8e2-5902c5077047" width="200" /> |
-| **Manage Issues** | **Weekly Statistics** | **App Configuration** |
+|  <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |  
+| **Manage Issues** | **Weekly Statistics** | **App Configuration** | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" />
+
 ---
 
 ## 📱 Features
