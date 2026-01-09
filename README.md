@@ -1,4 +1,4 @@
-# 🎓 CampusOne – Smart Campus Complaint & Management System
+<img width="310" height="698" alt="Screenshot 2026-01-09 at 11 10 43 PM" src="https://github.com/user-attachments/assets/71731ea9-fef3-4bd4-aa33-b9571583f8d6" /># 🎓 CampusOne – Smart Campus Complaint & Management System
 
 > **Bridging the gap between students and administration with real-time tracking and seamless campus management.**
 
@@ -39,10 +39,11 @@
 <br>
 
 ### 📊 Admin & Analytics Dashboard
-| **Mess Feedback Form** | **Admin vs User** | **Complaint Form** |
+| **Mess Committee** | **Admin vs User** | **Complaint Form** |
 |:---:|:---:|:---:|
-|  <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |  
-| **Manage Issues** | **Weekly Statistics** | **App Configuration** | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" />
+|  <img width="310" height="698" alt="Screenshot 2026-01-09 at 11 10 43 PM" src="https://github.com/user-attachments/assets/621bd501-d986-4451-a5ff-f1a24c7c9821" />
+ | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | 
+| **Manage Issues** | **Weekly Statistics** | **App Configuration** 
 
 ---
 
