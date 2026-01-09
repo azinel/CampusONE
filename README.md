@@ -1,4 +1,4 @@
-<img width="310" height="698" alt="Screenshot 2026-01-09 at 11 10 43 PM" src="https://github.com/user-attachments/assets/71731ea9-fef3-4bd4-aa33-b9571583f8d6" /># 🎓 CampusOne – Smart Campus Complaint & Management System
+🎓 CampusOne – Smart Campus Complaint & Management System
 
 > **Bridging the gap between students and administration with real-time tracking and seamless campus management.**
 
@@ -31,20 +31,18 @@
 <br>
 
 ### 🚨 Complaints & Mess Management
-| **Complaint Tracking**  | **Event Details** | **Mess Feedback** |
+| **Complaint Tracking** | **Event Details** | **Mess Feedback** |
 |:---:|:---:|:---:|
 | <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" width="200" /> | <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> |
-| **Live Status Updates** | **Seamless Registration** | **Daily Meal Rating** | 
+| **Live Status Updates** | **Seamless Registration** | **Daily Meal Rating** |
 
 <br>
 
 ### 📊 Admin & Analytics Dashboard
 | **Mess Committee** | **Admin vs User** | **Complaint Form** |
 |:---:|:---:|:---:|
-|  <img width="310" height="698" alt="Screenshot 2026-01-09 at 11 10 43 PM" src="https://github.com/user-attachments/assets/621bd501-d986-4451-a5ff-f1a24c7c9821" />
- | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | 
-| **Manage Issues** | **Weekly Statistics** | **App Configuration** 
-
+| <img src="https://github.com/user-attachments/assets/621bd501-d986-4451-a5ff-f1a24c7c9821" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> |
+| **Manage Issues** | **Weekly Statistics** | **App Configuration** |
 ---
 
 ## 📱 Features
