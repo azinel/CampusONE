@@ -22,14 +22,17 @@
 
 ## 📸 App Screenshots
 
-| **Login & Dashboard** | **Complaints & Tracking** | **Mess Feedback & Analytics** |
+| **Login** | **Complaints & Tracking** | **Mess Feedback & Analytics** |
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |
+| <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img width="499" height="1080" alt="Screenshot 2026-01-09 231611" src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" />![Uploading WhatsApp Image 2026-01-09 at 11.16.10 PM.jpeg…]()
+
+ <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |
 | **Secure Auth** | **Live Status Updates** | **Visual Data Insights** |
 
 | **Admin Controls** | **Profile & Settings** |
 |:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> |
+| <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> | <img width="486" height="1080" alt="Screenshot 2026-01-09 231727" src="https://github.com/user-attachments/assets/b6c50edb-46c5-4937-a8e2-5902c5077047" />
+
 
 ---
 
@@ -70,12 +73,15 @@
 Follow these steps to set up the project locally.
 
 ### 1️⃣ Clone the Repository
+```
 git clone [https://github.com/your-username/CampusOne.git](https://github.com/your-username/CampusOne.git)
 cd CampusOne
-
+```
 
 2️⃣ Install Dependencies
+```
 npm install
+```
 
 3️⃣ Configure Environment
 Create a .env file in the root directory and add your Firebase credentials:
@@ -90,13 +96,14 @@ EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 4️⃣ Run the App
-
+```
 npx expo start
+```
 Scan the QR code using the Expo Go app on your Android/iOS device.
 
 📂 Project Structure
 
-
+```
 src/
 ├── app/                  # Expo Router Screens
 │   ├── (tabs)/           # Tab Navigation (Dashboard, Complaints, Mess)
@@ -108,14 +115,18 @@ src/
 │   ├── theme.js          # Theme (Colors, Typography)
 │   └── auth/             # Auth Hooks & Context
 └── assets/               # Static Images & Icons
-
+```
 🤝 Contributing
 Contributions are welcome!
 
 1.Fork the repository.
+
 2.Create a Feature Branch (git checkout -b feature/AmazingFeature).
-3.Commit your changes (git commit -m "Add AmazingFeature").
+
+3.Commit your changes (git commit -m "Add AmazingFeature
+
 4.Push to the branch (git push origin feature/AmazingFeature).
+
 5.Open a Pull Request.
 
 <div align="center"> <p>Built with ❤️ for the Smart Campus Initiative</p> </div>
