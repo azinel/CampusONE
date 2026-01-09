@@ -24,7 +24,9 @@
 
 | **Login** | **Complaints & Tracking** | **Mess Feedback & Analytics** |
 |:---:|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img width="499" height="1080" alt="Screenshot 2026-01-09 231611" src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" />![Uploading WhatsApp Image 2026-01-09 at 11.16.10 PM.jpeg…]()
+| <img width="501" height="1080" alt="Screenshot (68)" src="https://github.com/user-attachments/assets/95ec1c3e-5332-43f0-b0ea-8559880d1f48" /> |
+<img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img width="499" height="1080" alt="Screenshot 2026-01-09 231611" src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" /> | <img width="571" height="1280" alt="image" src="https://github.com/user-attachments/assets/71ac132f-b2a6-42c6-8423-2390990c5303" /> |
+
 
  <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |
 | **Secure Auth** | **Live Status Updates** | **Visual Data Insights** |
