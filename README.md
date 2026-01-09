@@ -22,20 +22,27 @@
 
 ## 📸 App Screenshots
 
-| **Login** | **Complaints & Tracking** | **Mess Feedback & Analytics** |
+### 📱 Student & User Experience
+| **Login & Authentication** | **Dashboard & Events** | **Profile & Settings** |
 |:---:|:---:|:---:|
-| <img width="501" height="1080" alt="Screenshot (68)" src="https://github.com/user-attachments/assets/95ec1c3e-5332-43f0-b0ea-8559880d1f48" /> |
-<img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img width="499" height="1080" alt="Screenshot 2026-01-09 231611" src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" /> | <img width="571" height="1280" alt="image" src="https://github.com/user-attachments/assets/71ac132f-b2a6-42c6-8423-2390990c5303" /> |
+| <img src="https://github.com/user-attachments/assets/95ec1c3e-5332-43f0-b0ea-8559880d1f48" width="200" /> | <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> |
+| **Secure Entry** | **Real-time Campus Feed** | **User Management** |
 
+<br>
 
- <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |
-| **Secure Auth** | **Live Status Updates** | **Visual Data Insights** |
+### 🚨 Complaints & Mess Management
+| **Complaint Tracking** | **Mess Feedback Form** | **Event Details** |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img src="https://github.com/user-attachments/assets/7c357350-1bb3-4412-869f-9683d22e29c8" width="200" /> | <img src="https://github.com/user-attachments/assets/71ac132f-b2a6-42c6-8423-2390990c5303" width="200" /> |
+| **Live Status Updates** | **Daily Meal Rating** | **Seamless Registration** |
 
-| **Admin Controls** | **Profile & Settings** |
-|:---:|:---:|
-| <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> | <img width="486" height="1080" alt="Screenshot 2026-01-09 231727" src="https://github.com/user-attachments/assets/b6c50edb-46c5-4937-a8e2-5902c5077047" />
+<br>
 
-
+### 📊 Admin & Analytics Dashboard
+| **Admin Controls** | **Visual Data Insights** | **System Settings** |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> | <img src="https://github.com/user-attachments/assets/b6c50edb-46c5-4937-a8e2-5902c5077047" width="200" /> |
+| **Manage Issues** | **Weekly Statistics** | **App Configuration** |
 ---
 
 ## 📱 Features
@@ -89,14 +96,14 @@ npm install
 Create a .env file in the root directory and add your Firebase credentials:
 
 Code snippet
-
+```
 EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
 EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
-
+```
 4️⃣ Run the App
 ```
 npx expo start
@@ -118,7 +125,8 @@ src/
 │   └── auth/             # Auth Hooks & Context
 └── assets/               # Static Images & Icons
 ```
-🤝 Contributing
+**🤝 Contributing**
+
 Contributions are welcome!
 
 1.Fork the repository.
