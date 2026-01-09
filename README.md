@@ -1,124 +1,121 @@
-🎓 CampusOne – Smart Campus Complaint & Management System
+# 🎓 CampusOne – Smart Campus Complaint & Management System
 
-Bridging the gap between students and administration with real-time tracking and seamless campus management.
+> **Bridging the gap between students and administration with real-time tracking and seamless campus management.**
 
-CampusOne is a mobile-first smart campus application built using React Native (Expo) and Firebase, designed to simplify complaint management, mess feedback, and campus analytics.
-It implements a secure Role-Based Access Control (RBAC) system with separate experiences for Students and Admins/Wardens.
+![React Native](https://img.shields.io/badge/React_Native-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![Expo](https://img.shields.io/badge/Expo-1B1F23?style=for-the-badge&logo=expo&logoColor=white)
+![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)
+![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
-📱 Key Features
-🛡️ Role-Based Access Control (RBAC)
+---
 
-*Student Portal
+## 📖 Overview
 
-*Raise campus complaints
-*Track complaint status in real-time
-*Rate mess meals
-*View campus events
+**CampusOne** is a mobile-first smart campus application built using **React Native (Expo)** and **Firebase**. It simplifies complaint management, mess feedback, and campus analytics while ensuring security through a robust **Role-Based Access Control (RBAC)** system.
 
-Admin / Warden Dashboard
+### 🌟 Key Highlights
+- **Real-time Sync:** Complaints and events update instantly across devices.
+- **Secure Access:** Distinct portals for Students and Admins (Wardens).
+- **Data-Driven:** Automated weekly analytics for mess quality and facility issues.
 
-*View all complaints
-*Update complaint statuses
-*Access analytics & resolution insights
-*Security
-*Admin access verified using a Firestore whitelist
-*No unauthorized role switching
+---
 
-🚨 Complaint Management
+## 📸 App Screenshots
 
-*Live Status Updates
-*Pending → In Progress → Resolved
-*Image Evidence Support
-*Upload photos for maintenance issues
-*Priority Handling
-*High-priority complaints are highlighted for faster action
+| **Login & Dashboard** | **Complaints & Tracking** | **Mess Feedback & Analytics** |
+|:---:|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="200" /> | <img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="200" /> | <img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="200" /> |
+| **Secure Auth** | **Live Status Updates** | **Visual Data Insights** |
 
-📊 Mess & Campus Analytics
+| **Admin Controls** | **Profile & Settings** |
+|:---:|:---:|
+| <img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="200" /> | <img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="200" /> |
 
-*Meal Feedback System
-*Taste
-*Hygiene
-*Quantity
-*Auto-calculated Weekly Averages
-*Admin Analytics Dashboard
-*Resolution time tracking
-Category-wise issue breakdown
-(Water, WiFi, Electricity, Maintenance, etc.)
+---
 
-🛠️ Tech Stack
+## 📱 Features
 
-*Frontend: React Native, Expo, Expo Router
-*Backend / Database: Firebase (Firestore, Authentication)
-*Image Storage: Cloudinary
-*State Management: React Hooks + Firestore Realtime Listener
-*Styling: Custom Theme System (Light / Dark Mode)
+### 🛡️ Role-Based Access Control (RBAC)
+- **Security:** Admin access is verified against a secure Firestore whitelist.
+- **Protection:** Prevents unauthorized role switching or data access.
 
+### 🎓 Student Portal
+- **📢 Raise Complaints:** Report maintenance issues with photo evidence.
+- **⏱️ Real-time Tracking:** See status changes (Pending → In Progress → Resolved).
+- **🍽️ Mess Feedback:** Rate meals on Taste, Hygiene, and Quantity.
+- **📅 Events:** View upcoming campus activities.
 
+### 👮 Admin / Warden Dashboard
+- **👀 Monitoring:** View all active complaints sorted by priority.
+- **✏️ Action:** Update status and resolve issues.
+- **📊 Analytics:**
+  - Resolution time tracking.
+  - Category-wise breakdown (Water, WiFi, Electricity, etc.).
+  - Weekly Mess feedback averages.
 
-🚀 Getting Started
+---
 
-1️⃣ Clone the Repository
-git clone https://github.com/your-username/CampusOne.git
+## 🛠️ Tech Stack
+
+- **Frontend:** React Native, Expo, Expo Router
+- **Backend:** Firebase (Firestore, Authentication)
+- **Media:** Cloudinary (Image Storage)
+- **State Management:** React Hooks + Firestore Realtime Listeners
+- **Styling:** Custom Theme System (Light / Dark Mode support)
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up the project locally.
+
+### 1️⃣ Clone the Repository
+git clone [https://github.com/your-username/CampusOne.git](https://github.com/your-username/CampusOne.git)
 cd CampusOne
+
 
 2️⃣ Install Dependencies
 npm install
 
-3️⃣ Configure Environment Variables
+3️⃣ Configure Environment
+Create a .env file in the root directory and add your Firebase credentials:
 
-Create a .env file in the root directory:
+Code snippet
 
 EXPO_PUBLIC_FIREBASE_API_KEY=your_api_key
-EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
 EXPO_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
 EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 EXPO_PUBLIC_FIREBASE_APP_ID=your_app_id
 
 4️⃣ Run the App
+
 npx expo start
-
-
-Scan the QR code using Expo Go on your phone.
+Scan the QR code using the Expo Go app on your Android/iOS device.
 
 📂 Project Structure
+
+
 src/
-├── app/                 # Expo Router Screens
-│   ├── (tabs)/          # Tab Navigation (Dashboard, Complaints, Mess)
-│   ├── login.tsx        # Authentication Screen
-│   └── _layout.tsx      # Root Layout & Auth Logic
-├── components/          # Reusable UI Components
+├── app/                  # Expo Router Screens
+│   ├── (tabs)/           # Tab Navigation (Dashboard, Complaints, Mess)
+│   ├── login.tsx         # Authentication Logic
+│   └── _layout.tsx       # Root Layout & Auth Guards
+├── components/           # Reusable UI Components (Cards, Buttons)
 ├── utils/
-│   ├── firebase.js      # Firebase Initialization
-│   ├── theme.js         # Theme Configuration
-│   └── auth/            # Auth Hooks & Guards
-└── assets/              # Images & Icons
-
-📸 Screenshots
-🔐 Authentication & Dashboard<
-<table> <tr>  <td><img src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" width="250"/></td> <td><img src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" width="250"/></td> </tr> </table>
-🚨 Complaints & Tracking
-<table> <tr> <td><img src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" width="250"/></td> </tr> </table>
-📊 Analytics & Mess Feedback
-<table> <tr> <td><img src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" width="250"/></td> <td><img src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" width="250"/></td> </tr> </table>
-
+│   ├── firebase.js       # Firebase Config
+│   ├── theme.js          # Theme (Colors, Typography)
+│   └── auth/             # Auth Hooks & Context
+└── assets/               # Static Images & Icons
 
 🤝 Contributing
+Contributions are welcome!
 
-1. Fork the repository
+1.Fork the repository.
+2.Create a Feature Branch (git checkout -b feature/AmazingFeature).
+3.Commit your changes (git commit -m "Add AmazingFeature").
+4.Push to the branch (git push origin feature/AmazingFeature).
+5.Open a Pull Request.
 
-2. Create a feature branch
-git checkout -b feature/AmazingFeature
-
-
-3. Commit your changes
-git commit -m "Add AmazingFeature"
-
-4. Push to the branch
-git push origin feature/AmazingFeature
-
-5. Open a Pull Request
-
-Acknowledgements
-
-Built with passion for the Smart Campus Initiative ❤️
+<div align="center"> <p>Built with ❤️ for the Smart Campus Initiative</p> </div>
