@@ -6,7 +6,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function TabLayout() {
   const theme = useTheme();
-  const insets = useSafeAreaInsets(); //
+  const insets = useSafeAreaInsets();
 
   return (
     <Tabs
@@ -17,13 +17,13 @@ export default function TabLayout() {
         tabBarStyle: {
           backgroundColor: theme.colors.surface,
           borderTopColor: theme.colors.border,
-          // FIX: Add the bottom inset to the height and padding
           height: 60 + insets.bottom, 
           paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
           paddingTop: 10,
         },
       }}
     >
+      {/* 1. Complaints Tab */}
       <Tabs.Screen
         name="index"
         options={{
@@ -33,6 +33,8 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* 2. Events Tab */}
       <Tabs.Screen
         name="events"
         options={{
@@ -42,6 +44,8 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* 3. Mess Tab */}
       <Tabs.Screen
         name="mess"
         options={{
@@ -51,6 +55,8 @@ export default function TabLayout() {
           ),
         }}
       />
+
+      {/* 4. Dashboard Tab (Profile) */}
       <Tabs.Screen
         name="profile"
         options={{
@@ -60,12 +66,21 @@ export default function TabLayout() {
           ),
         }}
       />
-      {/* Hide utility/modal screens from the bottom tab bar */}
+
+      {/* 🚫 HIDDEN SCREENS (href: null) 
+         This tells Expo: "Don't show a tab button for these files"
+      */}
+      
+      {/* Hiding the Admin Create Event Form (FIX) */}
+      <Tabs.Screen name="admin/create-event" options={{ href: null }} />
+      
+      {/* Hiding Other Screens */}
       <Tabs.Screen name="create-complaint" options={{ href: null }} />
       <Tabs.Screen name="submit-feedback" options={{ href: null }} />
       <Tabs.Screen name="debug" options={{ href: null }} />
       <Tabs.Screen name="complaint/[id]" options={{ href: null }} />
       <Tabs.Screen name="event/[id]" options={{ href: null }} />
+      
     </Tabs>
   );
 }

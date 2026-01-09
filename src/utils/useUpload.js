@@ -1,88 +1,72 @@
-import * as React from 'react';
-import { UploadClient } from '@uploadcare/upload-client'
-const client = new UploadClient({ publicKey: process.env.EXPO_PUBLIC_UPLOADCARE_PUBLIC_KEY });
+import { useState } from 'react';
+import { Alert } from 'react-native';
 
-function useUpload() {
-  const [loading, setLoading] = React.useState(false);
-  const upload = React.useCallback(async (input) => {
-    try {
-      setLoading(true);
-      let response;
+const useUpload = () => {
+  const [loading, setLoading] = useState(false);
 
-      if ("reactNativeAsset" in input && input.reactNativeAsset) {
-        let asset = input.reactNativeAsset;
+  const upload = async ({ reactNativeAsset }) => {
+    setLoading(true);
 
-        if (asset.file) {
-          const formData = new FormData();
-          formData.append("file", asset.file);
+    // 1. Get Keys (with fallbacks for safety)
+    const cloudName = process.env.EXPO_PUBLIC_CLOUDINARY_CLOUD_NAME || "daksmmbli";
+    const preset = process.env.EXPO_PUBLIC_CLOUDINARY_UPLOAD_PRESET || "campusone_unsigned";
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
 
-          response = await fetch("/_create/api/upload/", {
-            method: "POST",
-            body: formData,
-          });
+    console.log("Starting XHR Upload to:", cloudName);
+
+    return new Promise((resolve) => {
+      // 2. Use XMLHttpRequest instead of fetch
+      // This bypasses the "Unsupported FormDataPart" error in Expo
+      const xhr = new XMLHttpRequest();
+      xhr.open('POST', uploadUrl);
+
+      // 3. Handle Success
+      xhr.onload = () => {
+        setLoading(false);
+        if (xhr.status < 300) {
+          const result = JSON.parse(xhr.responseText);
+          console.log("XHR Success:", result.secure_url);
+          resolve({ url: result.secure_url, error: null });
         } else {
-          // Fallback to presigned Uploadcare upload
-          const presignRes = await fetch("/_create/api/upload/presign/", {
-            method: "POST",
-          });
-          const { secureSignature, secureExpire } = await presignRes.json();
+          // Parse Cloudinary Error
+          try {
+            const errorResp = JSON.parse(xhr.responseText);
+            const msg = errorResp.error?.message || "Unknown Cloudinary Error";
+            console.error("XHR Failed:", msg);
+            Alert.alert("Upload Failed", msg);
+            resolve({ url: null, error: msg });
+          } catch (e) {
+            console.error("XHR Parse Error:", xhr.responseText);
+            Alert.alert("Upload Error", "Invalid response from server");
+            resolve({ url: null, error: "Invalid response" });
+          }
+        }
+      };
 
-          const result = await client.uploadFile(asset, {
-            fileName: asset.name ?? asset.uri.split("/").pop(),
-            contentType: asset.mimeType,
-            secureSignature,
-            secureExpire
-          });
-          return { url: `${process.env.EXPO_PUBLIC_BASE_CREATE_USER_CONTENT_URL}/${result.uuid}/`, mimeType: result.mimeType || null };
-        }
-      } else if ("url" in input) {
-        response = await fetch("/_create/api/upload/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ url: input.url })
-        });
-      } else if ("base64" in input) {
-        response = await fetch("/_create/api/upload/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({ base64: input.base64 })
-        });
-      } else {
-        response = await fetch("/_create/api/upload/", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/octet-stream"
-          },
-          body: input.buffer
-        });
-      }
-      if (!response.ok) {
-        if (response.status === 413) {
-          throw new Error("Upload failed: File too large.");
-        }
-        throw new Error("Upload failed");
-      }
-      const data = await response.json();
-      return { url: data.url, mimeType: data.mimeType || null };
-    } catch (uploadError) {
-      if (uploadError instanceof Error) {
-        return { error: uploadError.message };
-      }
-      if (typeof uploadError === "string") {
-        return { error: uploadError };
-      }
-      return { error: "Upload failed" };
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+      // 4. Handle Network Errors
+      xhr.onerror = (e) => {
+        setLoading(false);
+        console.error("XHR Network Error:", e);
+        Alert.alert("Connection Error", "Check your internet connection.");
+        resolve({ url: null, error: "Network request failed" });
+      };
+
+      // 5. Construct Data (Standard RN Format)
+      const data = new FormData();
+      data.append('file', {
+        uri: reactNativeAsset.uri,
+        type: 'image/jpeg', // Hardcoded to ensure compatibility
+        name: 'upload.jpg',
+      });
+      data.append('upload_preset', preset);
+      data.append('cloud_name', cloudName);
+
+      // 6. Send
+      xhr.send(data);
+    });
+  };
 
   return [upload, { loading }];
-}
+};
 
-export { useUpload };
 export default useUpload;

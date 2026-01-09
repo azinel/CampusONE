@@ -7,11 +7,12 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
+  Image, // SWITCHED: Using standard React Native Image for stability
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useRouter, useLocalSearchParams } from "expo-router";
-import { Image } from "expo-image";
+// REMOVED: import { Image } from "expo-image"; (Source of the crash/hang)
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
@@ -27,70 +28,61 @@ export default function ComplaintDetailScreen() {
   const { id } = useLocalSearchParams();
 
   const [complaint, setComplaint] = useState(null);
-  const [insights, setInsights] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [loadingInsights, setLoadingInsights] = useState(false);
-
-  // SECURE ADMIN STATE: Initialized as false.jsx]
+  
+  // SECURE ADMIN STATE
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
+    // 1. Load Data
     loadComplaint();
-    checkAdminStatus(); // Trigger security check on load
+    // 2. Check Permissions
+    checkAdminStatus(); 
   }, [id]);
 
-  // SECURE CHECK: Verifies current user against 'admins' collection
-  // Find and replace your old checkAdminStatus function
-const checkAdminStatus = async () => {
-  if (!auth.currentUser?.email) return;
-
-  try {
-    // STRICT CHECK: Only allows emails manually added to the 'admins' collection
-    const adminQuery = query(
-      collection(db, 'admins'), 
-      where('email', '==', auth.currentUser.email)
-    );
-    
-    const adminSnap = await getDocs(adminQuery);
-    
-    // Set isAdmin to true ONLY if a matching document is found in Firestore
-    setIsAdmin(!adminSnap.empty); 
-  } catch (error) {
-    console.error("Admin verification error:", error);
-    setIsAdmin(false);
-  }
-};
+  const checkAdminStatus = async () => {
+    if (!auth.currentUser?.email) return;
+    try {
+      const adminQuery = query(
+        collection(db, 'admins'), 
+        where('email', '==', auth.currentUser.email)
+      );
+      const adminSnap = await getDocs(adminQuery);
+      setIsAdmin(!adminSnap.empty); 
+    } catch (error) {
+      console.error("Admin verification error:", error);
+      setIsAdmin(false);
+    }
+  };
 
   const loadComplaint = async () => {
     if (!id) return;
     try {
       setLoading(true);
+      console.log("Fetching complaint:", id);
 
       const docRef = doc(db, 'complaints', id);
       const snap = await getDoc(docRef);
 
       if (snap.exists()) {
         const data = snap.data();
+        console.log("Complaint loaded. Has photo?", !!data.photo_url);
+        
         setComplaint({
           id: snap.id,
           ...data,
-          // Correctly convert Firebase Timestamps for your UI.jsx]
+          // Safe Timestamp Conversion
           created_at: data.created_at?.toDate ? data.created_at.toDate().toISOString() : data.created_at,
           updated_at: data.updated_at?.toDate ? data.updated_at.toDate().toISOString() : data.updated_at,
           resolved_at: data.resolved_at?.toDate ? data.resolved_at.toDate().toISOString() : data.resolved_at,
         });
-        setLoading(false);
-        return; // Exit early once data is found
-      }
-
-      // Secondary fallback to your legacy API logic.jsx]
-      const response = await fetch(`/api/complaints/${id}`);
-      if (response.ok) {
-        const data = await response.json();
-        setComplaint(data.complaint);
+      } else {
+        console.log("Document does not exist");
+        Alert.alert("Error", "Complaint not found.");
       }
     } catch (error) {
-      console.error("Navigation Error:", error);
+      console.error("Error loading complaint:", error);
+      Alert.alert("Error", "Could not load details.");
     } finally {
       setLoading(false);
     }
@@ -110,10 +102,10 @@ const checkAdminStatus = async () => {
 
       await updateDoc(docRef, updateData);
       Alert.alert("Success", `Status updated to ${newStatus}`);
-      loadComplaint();
+      loadComplaint(); 
     } catch (err) {
       console.error("Error updating status:", err);
-      Alert.alert("Error", "Failed to update status. Check your permissions.");
+      Alert.alert("Error", "Failed to update status.");
     }
   };
 
@@ -121,11 +113,7 @@ const checkAdminStatus = async () => {
     if (!dateString) return "Not available";
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
+      year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit",
     });
   };
 
@@ -135,6 +123,7 @@ const checkAdminStatus = async () => {
         <StatusBar style={theme.colors.statusBarStyle} />
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color={theme.colors.primary} />
+          <Text style={{ marginTop: 10, color: theme.colors.textSecondary }}>Loading Evidence...</Text>
         </View>
       </View>
     );
@@ -143,12 +132,9 @@ const checkAdminStatus = async () => {
   if (!complaint) {
     return (
       <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
-        <StatusBar style={theme.colors.statusBarStyle} />
-        <ScreenHeader title="Complaint" showBackButton onBackPress={() => router.back()} />
+        <ScreenHeader title="Error" showBackButton onBackPress={() => router.back()} />
         <View style={styles.errorContainer}>
-          <Text style={[styles.errorText, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]}>
-            Complaint not found
-          </Text>
+          <Text style={{ color: theme.colors.text }}>Complaint not found.</Text>
         </View>
       </View>
     );
@@ -171,6 +157,7 @@ const checkAdminStatus = async () => {
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.content}>
+          {/* Main Info */}
           <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
             <View style={styles.badges}>
               <CategoryBadge category={complaint.category} />
@@ -183,7 +170,7 @@ const checkAdminStatus = async () => {
               <View style={styles.metaItem}>
                 <Ionicons name="location" size={16} color={theme.colors.textSecondary} />
                 <Text style={[styles.metaText, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]}>
-                  {complaint.hostel} - Room {complaint.room_number}
+                  {complaint.hostel} - {complaint.room_number}
                 </Text>
               </View>
               <View style={styles.metaItem}>
@@ -195,95 +182,62 @@ const checkAdminStatus = async () => {
             </View>
           </View>
 
-          {/* ADMIN ACTION UI: Only visible if isAdmin state is true.jsx] */}
+          {/* Admin Actions */}
           {isAdmin && (
-            <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
+            <View style={[styles.card, { backgroundColor: theme.colors.surface, borderColor: theme.colors.primary, borderWidth: 1 }]}>
               <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
                 Admin Actions
               </Text>
               <View style={styles.adminButtons}>
-                <TouchableOpacity
-                  style={[styles.adminBtn, { backgroundColor: theme.colors.warning }]}
-                  onPress={() => updateStatus('In Progress')}
-                >
+                <TouchableOpacity style={[styles.adminBtn, { backgroundColor: '#F59E0B' }]} onPress={() => updateStatus('In Progress')}>
                   <Text style={styles.btnText}>Mark In Progress</Text>
                 </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.adminBtn, { backgroundColor: theme.colors.success }]}
-                  onPress={() => updateStatus('Resolved')}
-                >
+                <TouchableOpacity style={[styles.adminBtn, { backgroundColor: '#10B981' }]} onPress={() => updateStatus('Resolved')}>
                   <Text style={styles.btnText}>Resolve Now</Text>
                 </TouchableOpacity>
               </View>
             </View>
           )}
 
+          {/* Photo Evidence (Using Native Image) */}
           {complaint.photo_url && (
             <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
               <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
                 Photo Evidence
               </Text>
-              <Image source={{ uri: complaint.photo_url }} style={styles.photo} contentFit="cover" transition={200} />
+              {/* STABLE IMAGE COMPONENT */}
+              <Image 
+                source={{ uri: complaint.photo_url }} 
+                style={styles.photo} 
+                resizeMode="cover"
+                onError={(e) => console.log("Image Load Error:", e.nativeEvent.error)}
+              />
             </View>
           )}
 
+          {/* Description */}
           <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
-              Description
-            </Text>
+            <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>Description</Text>
             <Text style={[styles.description, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]}>
               {complaint.description}
             </Text>
           </View>
 
+          {/* Reporter Info */}
           <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
-              Reported By
-            </Text>
+            <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>Reported By</Text>
             <View style={styles.studentInfo}>
               <View style={styles.infoRow}>
                 <Ionicons name="person" size={18} color={theme.colors.textSecondary} />
-                <Text style={[styles.infoText, { fontFamily: "Lato_400Regular", color: theme.colors.text }]}>
-                  {complaint.student_name}
-                </Text>
+                <Text style={[styles.infoText, { fontFamily: "Lato_400Regular", color: theme.colors.text }]}>{complaint.student_name}</Text>
               </View>
               <View style={styles.infoRow}>
                 <Ionicons name="mail" size={18} color={theme.colors.textSecondary} />
-                <Text style={[styles.infoText, { fontFamily: "Lato_400Regular", color: theme.colors.text }]}>
-                  {complaint.student_email}
-                </Text>
+                <Text style={[styles.infoText, { fontFamily: "Lato_400Regular", color: theme.colors.text }]}>{complaint.student_email}</Text>
               </View>
             </View>
           </View>
 
-          <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-            <Text style={[styles.sectionTitle, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
-              Timeline
-            </Text>
-            <View style={styles.timeline}>
-              <View style={styles.timelineItem}>
-                <View style={[styles.timelineDot, { backgroundColor: theme.colors.primary }]} />
-                <View style={styles.timelineContent}>
-                  <Text style={[styles.timelineTitle, { color: theme.colors.text }]}>Submitted</Text>
-                  <Text style={[styles.timelineDate, { color: theme.colors.textSecondary }]}>
-                    {formatDate(complaint.created_at)}
-                  </Text>
-                </View>
-              </View>
-
-              {complaint.resolved_at && (
-                <View style={styles.timelineItem}>
-                  <View style={[styles.timelineDot, { backgroundColor: theme.colors.success }]} />
-                  <View style={styles.timelineContent}>
-                    <Text style={[styles.timelineTitle, { color: theme.colors.text }]}>Resolved</Text>
-                    <Text style={[styles.timelineDate, { color: theme.colors.textSecondary }]}>
-                      {formatDate(complaint.resolved_at)}
-                    </Text>
-                  </View>
-                </View>
-              )}
-            </View>
-          </View>
         </View>
       </ScrollView>
     </View>
@@ -296,8 +250,7 @@ const styles = StyleSheet.create({
   content: { paddingHorizontal: 20 },
   loadingContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
   errorContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
-  errorText: { fontSize: 16 },
-  card: { borderRadius: 16, padding: 16, marginBottom: 16, elevation: 2 },
+  card: { borderRadius: 16, padding: 16, marginBottom: 16, elevation: 2, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
   badges: { flexDirection: "row", justifyContent: "space-between", marginBottom: 16 },
   title: { fontSize: 22, marginBottom: 12 },
   metaRow: { gap: 12 },
@@ -306,16 +259,11 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, marginBottom: 12 },
   adminButtons: { flexDirection: 'row', gap: 10, marginTop: 5 },
   adminBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },
-  btnText: { color: '#FFFFFF', fontWeight: '600' },
-  photo: { width: "100%", height: 200, borderRadius: 12 },
+  btnText: { color: '#FFFFFF', fontWeight: '600', fontSize: 14 },
+  // Photo style for Native Image
+  photo: { width: "100%", height: 200, borderRadius: 12, backgroundColor: '#e1e1e1' }, 
   description: { fontSize: 15, lineHeight: 22 },
   studentInfo: { gap: 10 },
   infoRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   infoText: { fontSize: 14 },
-  timeline: { gap: 16 },
-  timelineItem: { flexDirection: "row", gap: 12 },
-  timelineDot: { width: 12, height: 12, borderRadius: 6, marginTop: 4 },
-  timelineContent: { flex: 1 },
-  timelineTitle: { fontSize: 15, marginBottom: 4 },
-  timelineDate: { fontSize: 13 },
 });

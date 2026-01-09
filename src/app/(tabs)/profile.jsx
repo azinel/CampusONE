@@ -213,8 +213,8 @@ export default function ProfileScreen() {
         ) : (
           /* --- STUDENT ONLY SECTION --- */
           <View>
-            <View style={[styles.card, { backgroundColor: theme.colors.surface }]}>
-              <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Quick Actions</Text>
+            {/* <View style={[styles.card, { backgroundColor: theme.colors.surface }]}> */}
+              {/* <Text style={[styles.cardTitle, { color: theme.colors.text }]}>Quick Actions</Text>
               <Text style={{ color: theme.colors.textSecondary, marginBottom: 15 }}>
                 Manage your campus experience.
               </Text>
@@ -225,8 +225,8 @@ export default function ProfileScreen() {
               <View style={[styles.infoRow, { marginTop: 15 }]}>
                 <Ionicons name="restaurant" size={20} color={theme.colors.primary} />
                 <Text style={{ color: theme.colors.text, marginLeft: 10 }}>Give Mess Feedback</Text>
-              </View>
-            </View>
+              </View> */}
+            {/* </View> */}
           </View>
         )}
 

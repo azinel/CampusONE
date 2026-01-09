@@ -1,41 +1,46 @@
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet } from "react-native";
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
-import { useTheme } from "../utils/theme";
+import { useTheme } from "@/utils/theme";
 
-export default function PrimaryButton({
-  title,
-  onPress,
-  disabled = false,
-  fontFamily = "Lato_600SemiBold",
-  style,
-  textStyle,
+export default function PrimaryButton({ 
+  title, 
+  onPress, 
+  disabled = false, 
   gradient = false,
+  style 
 }) {
   const theme = useTheme();
+
+  // If gradient is true, we wrap the content in LinearGradient
+  // If false, we use a standard View-like style
+  const ButtonContent = () => (
+    <>
+      {disabled && (title === "Processing..." || title === "Uploading...") ? (
+        <ActivityIndicator color="#FFF" style={{ marginRight: 8 }} />
+      ) : null}
+      
+      <Text style={styles.text}>
+        {title}
+      </Text>
+    </>
+  );
 
   if (gradient) {
     return (
       <TouchableOpacity
-        style={[styles.gradientButton, disabled && styles.disabled, style]}
         onPress={onPress}
         disabled={disabled}
+        activeOpacity={0.8}
+        style={[styles.container, style, disabled && styles.disabled]}
       >
         <LinearGradient
-          colors={[theme.colors.primary, theme.colors.primaryLight]}
+          colors={[theme.colors.primary, '#4F46E5']} // Adjust secondary color as needed
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
-          style={styles.gradientContainer}
+          style={styles.gradient}
         >
-          <Text
-            style={[
-              styles.gradientText,
-              { fontFamily: fontFamily, color: "#FFFFFF" },
-              textStyle,
-            ]}
-          >
-            {title}
-          </Text>
+          <ButtonContent />
         </LinearGradient>
       </TouchableOpacity>
     );
@@ -43,60 +48,59 @@ export default function PrimaryButton({
 
   return (
     <TouchableOpacity
-      style={[
-        styles.primaryButton,
-        { backgroundColor: theme.colors.primary },
-        disabled && styles.disabled,
-        style,
-      ]}
       onPress={onPress}
       disabled={disabled}
+      activeOpacity={0.8}
+      style={[
+        styles.container, 
+        styles.solid, 
+        { backgroundColor: theme.colors.primary }, 
+        style, 
+        disabled && styles.disabled
+      ]}
     >
-      <Text
-        style={[
-          styles.primaryButtonText,
-          {
-            fontFamily: fontFamily,
-            color: "#FFFFFF",
-          },
-          textStyle,
-        ]}
-      >
-        {title}
-      </Text>
+      <ButtonContent />
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
-  primaryButton: {
-    paddingVertical: 16,
-    borderRadius: 25,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonText: {
-    fontSize: 16,
-  },
-  gradientButton: {
-    borderRadius: 22,
-    shadowColor: "#000",
+  container: {
+    borderRadius: 12,
+    overflow: 'hidden', // Ensures gradient respects border radius
+    marginVertical: 10,
+    elevation: 2, // Shadow for Android
+    shadowColor: "#000", // Shadow for iOS
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.2,
+    shadowRadius: 3,
   },
-  gradientContainer: {
-    paddingVertical: 14,
-    borderRadius: 22,
+  solid: {
+    paddingVertical: 16, // Use padding on container, not text
     alignItems: "center",
     justifyContent: "center",
-    height: 48,
+    flexDirection: "row",
   },
-  gradientText: {
+  gradient: {
+    paddingVertical: 16,
+    alignItems: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    width: '100%',
+  },
+  text: {
+    color: "#FFFFFF",
     fontSize: 16,
+    fontWeight: "700",
+    textTransform: "uppercase",
+    letterSpacing: 1,
+    // --- THE FIX IS HERE ---
+    lineHeight: 22,         // Gives vertical space for the font
+    paddingBottom: 2,       // Extra nudge for the 'tails' (p, q, g)
+    textAlignVertical: "center", // Android alignment fix
+    includeFontPadding: false,   // Android specific fix to remove extra top padding
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.6,
   },
 });

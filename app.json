@@ -1,7 +1,9 @@
 {
   "expo": {
-    "name": "Anything mobile app",
+    "name": "CampusONE",
+    "slug": "campusone",
     "version": "1.0.0",
+    "scheme": "campusone-app",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "userInterfaceStyle": "automatic",
@@ -19,15 +21,25 @@
       },
       "permissions": [
         "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS"
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE"
       ],
-      "package": "xyz.create.CreateExpoEnvironment"
+      "package": "com.campusone.app"
     },
     "plugins": [
       [
         "expo-router",
         {
           "sitemap": false
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow CampusONE to access your photos to upload evidence.",
+          "cameraPermission": "Allow CampusONE to take photos of issues."
         }
       ],
       [
@@ -49,7 +61,10 @@
       ],
       [
         "expo-video",
-        { "supportsBackgroundPlayback": true, "supportsPictureInPicture": true }
+        {
+          "supportsBackgroundPlayback": true,
+          "supportsPictureInPicture": true
+        }
       ],
       "expo-font",
       "expo-secure-store",
@@ -64,7 +79,11 @@
     },
     "extra": {
       "router": {
-        "origin": false
+        "origin": false,
+        "sitemap": false
+      },
+      "eas": {
+        "projectId": "ff0dd768-b882-4c29-834d-659b7afe8812"
       }
     },
     "runtimeVersion": {

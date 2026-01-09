@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -6,186 +6,162 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
+  LayoutAnimation,
+  Platform,
+  UIManager,
+  Linking,
+  Alert,
+  Image, // <--- SWITCHED BACK TO STANDARD IMAGE FOR STABILITY
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
-import { Image } from "expo-image";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useTheme } from "@/utils/theme";
 import ScreenHeader from "@/components/ScreenHeader";
-import { collection, query, where, orderBy, onSnapshot, Timestamp } from 'firebase/firestore';
-import { db } from '@/utils/firebase';
+import { collection, query, orderBy, onSnapshot, where, getDocs } from 'firebase/firestore';
+import { db, auth } from '@/utils/firebase';
 
+// Enable animation on Android
+if (Platform.OS === 'android') {
+  if (UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
+}
+
+// --- SUB-COMPONENT: Event Card ---
+// --- SUB-COMPONENT: Event Card ---
+const EventCard = ({ item, theme }) => {
+  const [expanded, setExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setExpanded(!expanded);
+  };
+
+  const handleOpenLink = async () => {
+    if (!item.registration_link) return;
+    const supported = await Linking.canOpenURL(item.registration_link);
+    if (supported) {
+      await Linking.openURL(item.registration_link);
+    } else {
+      Alert.alert("Error", "Invalid Link");
+    }
+  };
+
+  return (
+    <TouchableOpacity
+      style={[styles.card, { backgroundColor: theme.colors.surface }]}
+      activeOpacity={0.9}
+      onPress={toggleExpand}
+    >
+      {/* Banner Image */}
+      <View style={styles.imageContainer}>
+        {item.photo_url || item.banner_url ? (
+          <Image
+            source={{ uri: item.photo_url || item.banner_url }}
+            style={styles.banner}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={[styles.bannerPlaceholder, { backgroundColor: theme.colors.primary + "20" }]}>
+            <Ionicons name="calendar" size={40} color={theme.colors.primary} />
+          </View>
+        )}
+      </View>
+
+      <View style={styles.content}>
+        {/* Header (Title & Date) */}
+        <View style={styles.headerRow}>
+          <View style={{ flex: 1, paddingRight: 10 }}>
+            <Text style={[styles.title, { color: theme.colors.text }]}>{item.title}</Text>
+            <Text style={[styles.date, { color: theme.colors.primary }]}>
+              {item.date || "Date TBA"}
+            </Text>
+          </View>
+          <Ionicons 
+            name={expanded ? "chevron-up-circle" : "chevron-down-circle"} 
+            size={28} 
+            color={theme.colors.textTertiary} 
+          />
+        </View>
+
+        {/* EXPANDED CONTENT */}
+        {expanded && (
+          <View style={styles.detailsContainer}>
+            <View style={[styles.divider, { backgroundColor: theme.colors.border }]} />
+            
+            {/* Location */}
+            <View style={styles.row}>
+              <Ionicons name="location-outline" size={18} color={theme.colors.textSecondary} />
+              <Text style={[styles.detailText, { color: theme.colors.text }]}>
+                {item.location || "Venue TBA"}
+              </Text>
+            </View>
+
+            {/* Description */}
+            <Text style={[styles.description, { color: theme.colors.textSecondary }]}>
+              {item.description}
+            </Text>
+            
+            {/* "See Details" Button (Only if a link exists) */}
+            {item.registration_link ? (
+              <TouchableOpacity 
+                style={[styles.registerBtn, { backgroundColor: theme.colors.primary }]}
+                onPress={handleOpenLink}
+              >
+                <Text style={styles.registerText}>See Details</Text>
+                <Ionicons name="arrow-forward-circle-outline" size={18} color="#FFF" style={{ marginLeft: 6 }} />
+              </TouchableOpacity>
+            ) : null}
+          </View>
+        )}
+      </View>
+    </TouchableOpacity>
+  );
+};
+
+// --- MAIN SCREEN ---
 export default function EventsScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const theme = useTheme();
+  
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filter, setFilter] = useState("upcoming");
+  const [isAdmin, setIsAdmin] = useState(false);
 
-  // FIXED: Defined the loadEvents function to handle manual refreshes
-  const loadEvents = useCallback(async () => {
-    setLoading(true);
-    // The onSnapshot listener below will handle the actual data update
-    // We just trigger a brief loading state for UX
-    setTimeout(() => setLoading(false), 500);
+  useEffect(() => {
+    const checkAdmin = async () => {
+      if (!auth.currentUser?.email) return;
+      // Safety check for Firestore
+      try {
+        const q = query(collection(db, 'admins'), where('email', '==', auth.currentUser.email));
+        const snap = await getDocs(q);
+        setIsAdmin(!snap.empty); 
+      } catch (e) {
+        console.log("Admin Check Error", e);
+      }
+    };
+    checkAdmin();
   }, []);
 
   useEffect(() => {
-    let unsub = null;
-    let active = true;
+    setLoading(true);
+    // Fetch ALL events, ordered by Creation Time (Newest First)
+    const q = query(collection(db, 'events'), orderBy('created_at', 'desc'));
 
-    const setup = async () => {
-      setLoading(true);
-
-      // Firestore query logic replacing the broken /api fetch
-      const eventsRef = collection(db, 'events');
-      let q;
-
-      if (filter === "upcoming") {
-        // Only show events where event_date is greater than or equal to now
-        const now = Timestamp.now();
-        q = query(
-          eventsRef, 
-          where('event_date', '>=', now), 
-          orderBy('event_date', 'asc')
-        );
-      } else {
-        // Show all events ordered by date
-        q = query(eventsRef, orderBy('event_date', 'asc'));
-      }
-
-      unsub = onSnapshot(
-        q,
-        (snapshot) => {
-          const docs = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-              id: doc.id,
-              ...data,
-              // Convert Firebase Timestamps to ISO strings for your formatting functions
-              event_date: data.event_date && data.event_date.toDate ? data.event_date.toDate().toISOString() : data.event_date,
-            };
-          });
-          if (active) {
-            setEvents(docs);
-            setLoading(false);
-          }
-        },
-        (err) => {
-          console.error('Firestore realtime error (events):', err);
-          if (active) setLoading(false);
-        },
-      );
-    };
-
-    setup();
-
-    return () => {
-      active = false;
-      if (unsub) unsub();
-    };
-  }, [filter]);
-
-  const formatEventDate = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    const now = new Date();
-    // Reset hours to compare just the calendar date
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    const eventDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    
-    const diffMs = eventDay - today;
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffDays < 0) {
-      return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-    } else if (diffDays === 0) {
-      return "Today";
-    } else if (diffDays === 1) {
-      return "Tomorrow";
-    } else if (diffDays < 7) {
-      return `In ${diffDays} days`;
-    } else {
-      return date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      });
-    }
-  };
-
-  const formatEventTime = (dateString) => {
-    if (!dateString) return "";
-    const date = new Date(dateString);
-    return date.toLocaleTimeString("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
+    const unsub = onSnapshot(q, (snapshot) => {
+      const docs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setEvents(docs);
+      setLoading(false);
     });
-  };
 
-  const renderEvent = ({ item }) => (
-    <TouchableOpacity
-      style={[styles.eventCard, { backgroundColor: theme.colors.surface }]}
-      onPress={() => router.push(`/(tabs)/event/${item.id}`)}
-    >
-      {item.banner_url ? (
-        <Image
-          source={{ uri: item.banner_url }}
-          style={styles.banner}
-          contentFit="cover"
-          transition={200}
-        />
-      ) : (
-        <View style={[styles.bannerPlaceholder, { backgroundColor: theme.colors.primary + "20" }]}>
-          <Ionicons name="calendar" size={40} color={theme.colors.primary} />
-        </View>
-      )}
-
-      <View style={styles.eventContent}>
-        <View style={styles.clubBadge}>
-          <Ionicons name="people" size={14} color={theme.colors.primary} />
-          <Text style={[styles.clubName, { fontFamily: "Lato_600SemiBold", color: theme.colors.primary }]}>
-            {item.club_name || "General"}
-          </Text>
-        </View>
-
-        <Text style={[styles.eventTitle, { fontFamily: "Lato_700Bold", color: theme.colors.text }]} numberOfLines={2}>
-          {item.title}
-        </Text>
-
-        <Text style={[styles.eventDescription, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]} numberOfLines={2}>
-          {item.description}
-        </Text>
-
-        <View style={styles.eventMeta}>
-          <View style={styles.metaItem}>
-            <Ionicons name="location" size={16} color={theme.colors.textSecondary} />
-            <Text style={[styles.metaText, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]}>
-              {item.venue}
-            </Text>
-          </View>
-
-          <View style={styles.metaItem}>
-            <Ionicons name="time" size={16} color={theme.colors.textSecondary} />
-            <Text style={[styles.metaText, { fontFamily: "Lato_400Regular", color: theme.colors.textSecondary }]}>
-              {formatEventDate(item.event_date)} • {formatEventTime(item.event_date)}
-            </Text>
-          </View>
-
-          <View style={styles.attendeeRow}>
-            <Ionicons name="people" size={16} color={theme.colors.textSecondary} />
-            <Text style={[styles.attendeeText, { fontFamily: "Lato_600SemiBold", color: theme.colors.text }]}>
-              {item.attendee_count || 0} attending
-            </Text>
-          </View>
-        </View>
-      </View>
-    </TouchableOpacity>
-  );
+    return () => unsub();
+  }, []);
 
   return (
     <View style={[styles.container, { paddingTop: insets.top, backgroundColor: theme.colors.background }]}>
@@ -193,50 +169,33 @@ export default function EventsScreen() {
 
       <ScreenHeader
         title="Campus Events"
-        subtitle="Discover & Join Activities"
-        actions={[{ icon: "refresh", onPress: loadEvents }]}
+        subtitle="Tap to see details"
       />
 
-      <View style={styles.filterContainer}>
-        {["upcoming", "all"].map((f) => (
-          <TouchableOpacity
-            key={f}
-            style={[
-              styles.filterChip,
-              filter === f ? { backgroundColor: theme.colors.primary } : {
-                backgroundColor: theme.colors.surface,
-                borderWidth: 1,
-                borderColor: theme.colors.border,
-              },
-            ]}
-            onPress={() => setFilter(f)}
-          >
-            <Text style={[styles.filterText, { fontFamily: "Lato_400Regular", color: filter === f ? "#FFFFFF" : theme.colors.text }]}>
-              {f === "upcoming" ? "Upcoming" : "All Events"}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={theme.colors.primary} />
-        </View>
-      ) : events.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Ionicons name="calendar-outline" size={64} color={theme.colors.textTertiary} />
-          <Text style={[styles.emptyText, { fontFamily: "Lato_600SemiBold", color: theme.colors.textSecondary }]}>
-            No events found
-          </Text>
-        </View>
+        <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 50 }} />
       ) : (
         <FlatList
           data={events}
-          renderItem={renderEvent}
           keyExtractor={(item) => item.id}
-          contentContainerStyle={[styles.listContent, { paddingBottom: insets.bottom + 20 }]}
-          showsVerticalScrollIndicator={false}
+          renderItem={({ item }) => <EventCard item={item} theme={theme} />}
+          contentContainerStyle={{ padding: 20, paddingBottom: 100 }}
+          ListEmptyComponent={
+            <Text style={{ textAlign: 'center', marginTop: 50, color: theme.colors.textSecondary }}>
+              No events found.
+            </Text>
+          }
         />
+      )}
+
+      {/* Admin FAB */}
+      {isAdmin && (
+        <TouchableOpacity
+          style={[styles.fab, { bottom: insets.bottom + 20, backgroundColor: '#8A2BE2' }]}
+          onPress={() => router.push("/admin/create-event")}
+        >
+          <Ionicons name="add" size={30} color="#FFF" />
+        </TouchableOpacity>
       )}
     </View>
   );
@@ -244,24 +203,23 @@ export default function EventsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  filterContainer: { flexDirection: "row", paddingHorizontal: 20, paddingVertical: 12, gap: 8 },
-  filterChip: { paddingHorizontal: 16, paddingVertical: 8, borderRadius: 20 },
-  filterText: { fontSize: 13 },
-  loadingContainer: { flex: 1, alignItems: "center", justifyContent: "center" },
-  emptyContainer: { flex: 1, alignItems: "center", justifyContent: "center", gap: 12 },
-  emptyText: { fontSize: 16 },
-  listContent: { paddingHorizontal: 20, paddingTop: 8 },
-  eventCard: { borderRadius: 16, marginBottom: 20, overflow: "hidden", elevation: 3 },
-  banner: { width: "100%", height: 180 },
-  bannerPlaceholder: { width: "100%", height: 180, alignItems: "center", justifyContent: "center" },
-  eventContent: { padding: 16 },
-  clubBadge: { flexDirection: "row", alignItems: "center", gap: 6, marginBottom: 8 },
-  clubName: { fontSize: 12, textTransform: "uppercase", letterSpacing: 0.5 },
-  eventTitle: { fontSize: 20, marginBottom: 8 },
-  eventDescription: { fontSize: 14, lineHeight: 20, marginBottom: 12 },
-  eventMeta: { gap: 8 },
-  metaItem: { flexDirection: "row", alignItems: "center", gap: 6 },
-  metaText: { fontSize: 13 },
-  attendeeRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
-  attendeeText: { fontSize: 14 },
+  card: { borderRadius: 16, marginBottom: 20, overflow: "hidden", elevation: 3, shadowColor: "#000", shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 } },
+  imageContainer: { width: "100%", height: 160, backgroundColor: '#f0f0f0' },
+  banner: { width: "100%", height: "100%" },
+  bannerPlaceholder: { width: "100%", height: 160, alignItems: "center", justifyContent: "center" },
+  content: { padding: 16 },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 4 },
+  date: { fontSize: 14, fontWeight: '600' },
+  
+  detailsContainer: { marginTop: 12 },
+  divider: { height: 1, marginBottom: 12 },
+  row: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 8 },
+  detailText: { fontSize: 14, fontWeight: '500' },
+  description: { fontSize: 14, lineHeight: 22, marginTop: 8, marginBottom: 12 },
+  
+  registerBtn: { flexDirection: 'row', paddingVertical: 12, borderRadius: 8, alignItems: 'center', justifyContent: 'center', marginTop: 8 },
+  registerText: { color: '#FFF', fontWeight: 'bold' },
+  
+  fab: { position: "absolute", right: 20, width: 56, height: 56, borderRadius: 28, alignItems: "center", justifyContent: "center", elevation: 6 },
 });
