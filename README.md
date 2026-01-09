@@ -1,4 +1,4 @@
-# 🎓 CampusOne - Smart Campus Complaint & Management System
+<img width="383" height="850" alt="image" src="https://github.com/user-attachments/assets/3b65ff9f-30d4-4380-b08f-080655bd9dd9" /># 🎓 CampusOne - Smart Campus Complaint & Management System
 
 > **Bridging the gap between students and administration with real-time analytics and seamless issue tracking.**
 
@@ -31,6 +31,7 @@ CampusOne is a robust mobile application built with **React Native (Expo)** and 
 * **Backend / Database**: Google Firebase (Firestore, Authentication)
 * **Styling**: Custom Theme System (Dark/Light mode support)
 * **State Management**: React Hooks & Real-time Firestore Listeners
+* ** Using external database to store picture in cloudinary database 
 
 ---
 
@@ -39,9 +40,6 @@ CampusOne is a robust mobile application built with **React Native (Expo)** and 
 Follow these steps to set up the project locally.
 
 ### 1. Clone the Repository
-
-```git clone [https://github.com/YOUR_USERNAME/CampusOne.git](https://github.com/YOUR_USERNAME/CampusOne.git)```
-```cd CampusOne```
 
 2.2. Install Dependencies
 npm install
@@ -61,6 +59,8 @@ npx expo start
 Scan the QR code with the Expo Go app on your phone to run it.
 
 📂 Project Structure
+<img width="396" height="846" alt="image" src="https://github.com/user-attachments/assets/692e23ad-7165-4418-825b-4c77716d8ed4" />
+
 src/
 ├── app/                 # Expo Router Screens
 │   ├── (tabs)/          # Main Tab Navigation (Dashboard, Complaints, Mess)
@@ -73,7 +73,14 @@ src/
 │   └── auth/            # Authentication Hooks
 └── assets/              # Images & Icons
 
-📸 Screenshots12Student DashboardAdmin AnalyticsComplaint DetailsMess Feedback(Add Screenshot)(Add Screenshot)(Add Screenshot)(Add Screenshot)
+//5. Screenshots 
+<img width="383" height="850" alt="image" src="https://github.com/user-attachments/assets/d1b34bc4-85ac-422a-885e-ed3b124cb08b" />
+<img width="376" height="846" alt="image" src="https://github.com/user-attachments/assets/49a59ba0-4e40-4ccd-8f73-9dcdf3947b7f" />
+<img width="359" height="828" alt="image" src="https://github.com/user-attachments/assets/703de9da-bcf3-45a1-8605-b386ab1d11a7" />
+<img width="389" height="861" alt="image" src="https://github.com/user-attachments/assets/d3b75c24-7b76-48b9-83fb-0721dda53935" />
+<img width="396" height="846" alt="image" src="https://github.com/user-attachments/assets/2779ffd3-d6de-43f4-bec5-cf1010c5adb9" />
+<img width="377" height="856" alt="image" src="https://github.com/user-attachments/assets/45e07530-9677-4c3e-896c-bf865f289361" />
+
 
 🤝 Contributing
 Fork the Project
