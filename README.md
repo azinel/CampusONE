@@ -1,3 +1,62 @@
+🎓 CampusOne – Smart Campus Complaint & Management System
+
+Bridging the gap between students and administration with real-time tracking and seamless campus management.
+
+CampusOne is a mobile-first smart campus application built using React Native (Expo) and Firebase, designed to simplify complaint management, mess feedback, and campus analytics.
+It implements a secure Role-Based Access Control (RBAC) system with separate experiences for Students and Admins/Wardens.
+
+📱 Key Features
+🛡️ Role-Based Access Control (RBAC)
+
+*Student Portal
+
+*Raise campus complaints
+*Track complaint status in real-time
+*Rate mess meals
+*View campus events
+
+Admin / Warden Dashboard
+
+*View all complaints
+*Update complaint statuses
+*Access analytics & resolution insights
+*Security
+*Admin access verified using a Firestore whitelist
+*No unauthorized role switching
+
+🚨 Complaint Management
+
+*Live Status Updates
+*Pending → In Progress → Resolved
+*Image Evidence Support
+*Upload photos for maintenance issues
+*Priority Handling
+*High-priority complaints are highlighted for faster action
+
+📊 Mess & Campus Analytics
+
+*Meal Feedback System
+*Taste
+*Hygiene
+*Quantity
+*Auto-calculated Weekly Averages
+*Admin Analytics Dashboard
+*Resolution time tracking
+Category-wise issue breakdown
+(Water, WiFi, Electricity, Maintenance, etc.)
+
+🛠️ Tech Stack
+
+*Frontend: React Native, Expo, Expo Router
+*Backend / Database: Firebase (Firestore, Authentication)
+*Image Storage: Cloudinary
+*State Management: React Hooks + Firestore Realtime Listener
+*Styling: Custom Theme System (Light / Dark Mode)
+
+
+
+🚀 Getting Started
+
 1️⃣ Clone the Repository
 git clone https://github.com/your-username/CampusOne.git
 cd CampusOne
